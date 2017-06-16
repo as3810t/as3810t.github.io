@@ -1,0 +1,117 @@
+.infoc.highlighter.container {
+	white-space: pre-wrap;
+	font-family: monospace;
+	tab-size: 4;
+
+	background: linear-gradient(to right, #d1c2a6 3em, #f0e8d9 3em, #f0e8d9);
+	padding-top: 1em;
+	padding-bottom: 1em;
+	padding-left: 0.5em;
+	line-height: 1.3em;
+	color: #000;
+	border: 1px solid #d1c2a6;
+	border-radius: 0;
+	box-shadow: none;
+
+	counter-reset: owlhighlighter;
+}
+
+.infoc.highlighter.container .line {
+	width: 100%;
+	display: inline-block;
+}
+
+.infoc.highlighter.container .line::before {
+	counter-increment: owlhighlighter;
+	content: counter(owlhighlighter) ".";
+	display: inline-block;
+	width: 2em;
+	text-align: right;
+	padding-right: 0.5em;
+	margin-right: 1em;
+	color: #444;
+	background: #d1c2a6;
+}
+
+.infoc.highlighter.container .line::before::selection {
+	background: transparent;
+}
+
+.infoc.highlighter .keyword {
+	color: #339;
+	font-weight: normal;
+}
+
+.infoc.highlighter .preprocessor {
+	color: #939;
+}
+
+.infoc.highlighter .block-comment {
+	color: #444 !important;
+	font-style: normal !important;
+}
+
+.infoc.highlighter .line-comment {
+	font-style: normal !important;
+	font-family: 'mclaren', 'comic sans', cursive !important;
+	font-weight: normal !important;
+	position: relative;
+	padding: 0em .5em;
+	margin: 0 0 0 .7em;
+	background: #e53;
+	color: #fff !important;
+	text-shadow: 0px 0px 1px #000;
+	line-height: 1;
+	border-radius: 0.35em;
+}
+
+.infoc.highlighter .line-comment span {
+	color: #fff !important;
+	font-style: normal !important;
+	font-family: 'mclaren', 'comic sans', cursive !important;
+	font-weight: normal !important;
+}
+
+.infoc.highlighter .line-comment::before {
+	content: '';
+	display: block;
+	box-shadow: none;
+	position: absolute;
+	top: 0.45em;
+	left: -0.65em;
+	width: 0;
+	height: 0;
+	border-top: .35em solid rgba(238,85,51,0);
+	border-bottom: .35em solid rgba(238,85,51,0);
+	border-right: .7em solid #e53;
+}
+
+.infoc.highlighter .line-comment .hidden {
+	font-size: 0;
+    color: transparent;
+    text-shadow: none;
+}
+
+.infoc.highlighter .string {
+	color: #060;
+}
+
+.infoc.highlighter .character {
+	color: #060;
+}
+
+.infoc.highlighter .number {
+	color: #060;
+}
+
+.infoc.highlighter .specfunction {
+	color: #175;
+}
+
+.infoc.highlighter .line.active {
+	background: rgba(255, 0, 0, 0.3);
+}
+
+.infoc.highlighter .segment.active {
+	background: rgba(255, 0, 0, 0.5);
+}

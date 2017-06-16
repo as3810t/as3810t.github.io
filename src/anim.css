@@ -1,0 +1,24 @@
+.animate {
+	padding: 4px;
+}
+
+.animate button {
+	margin-right: 4px;
+	border: 1px solid #aaa;
+    padding: .2em .25em;
+    border-radius: 2px;
+    font-family: 'open sans', 'droid sans', 'dejavu sans', 'verdana', 'arial', sans-serif;
+    font-weight: normal;
+    font-style: normal;
+    background-color: #e8e8e8;
+	line-height: 1.5em;
+    color: #111;
+    box-shadow: 1px 1px 0 #fff inset;
+	cursor: pointer;
+}
+
+.highlighter .animate, .draw .animate {
+	position: absolute;
+	top: 0;
+	right: 0;
+}

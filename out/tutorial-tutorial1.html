@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Tutorial: Buborékrendezés</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Tutorial: Buborékrendezés</h1>
+
+    <section>
+
+<header>
+    
+
+    <h2>Buborékrendezés</h2>
+</header>
+
+<article>
+    <html>
+	<head>
+		<title>Buborékrendezés - INFOC</title>
+		<meta charset="utf-8">
+		<script language="JavaScript" src="../src/syntax.js"></script>
+		<script language="JavaScript" src="../src/infoc/infoc.js"></script>
+		<script language="JavaScript" src="../src/draw.js"></script>
+		<script language="JavaScript" src="../src/anim.js"></script>
+		<link rel="stylesheet" href="../src/syntax.css">
+		<link rel="stylesheet" href="../src/infoc/infoc.css">
+		<link rel="stylesheet" href="../src/draw.css">
+		<link rel="stylesheet" href="../src/anim.css">
+		<style>
+			.highlight-red circle, .highlight-red rect {
+				fill: red !important;
+			}
+			.highlight-blue circle, .highlight-blue rect  {
+				fill: blue !important;
+			}
+			.highlight-green circle, .highlight-green rect  {
+				fill: green !important;
+			}
+			.buborek .animate, .list .animate {
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<section class="buborek">
+			<h1>Buborékrendezés</h1>
+			<script type="application/text" id="bubsource" data-language="infoc">
+				void buborek(double *t, int db) {
+					int i, j;
+
+					/* egyre rövidebb tömbrészletek ciklusa */
+					for (i = db-1; i > 0; --i) {
+					  /* egymás utáni párok ciklusa */
+						for (j = 0; j < i; ++j) {
+							if (t[j+1] < t[j]) {      //összehasonlítás
+								double temp = t[j];
+								t[j] = t[j+1];         //csere
+								t[j+1] = temp;
+							}
+						}
+					}
+				}
+			</script>
+			<svg sidth="100%" id="bubgraph"></svg>
+			<script language="JavaScript">
+				var anim = new OwlAnim({
+					type: 'afterDraw',
+					draw: 'bubgraph',
+					syntax: 'bubsource',
+					width: 600,
+					height: 100
+				}, function*(opt) {
+					var array = new OwlDraw.array({x:100, y: 50, radius: 20, num: 9, type: 'succeeding', sort: 'shuffle'});
+					var text = new OwlDraw.text({x: 300, y: 70, txt: 'új tömb'});
+					opt.draw.add(array); opt.draw.add(text);
+					yield;
+
+					opt.syntax.mark(5, 1); yield;
+					opt.syntax.mark(5, 2); yield;
+					for(let i = array.elements.length-1; i > 0; i--) {
+						opt.syntax.mark(7, 1); yield;
+						opt.syntax.mark(7, 2); yield;
+						for(let j = 0; j < i; j++) {
+							opt.syntax.mark(8);
+							if (array.elements[j+1].val < array.elements[j].val) {
+								array.elements[j+1].highlight('red');
+								array.elements[j].highlight('red');
+								text.text('csere kell');
+								yield;
+								opt.syntax.mark([9, 10, 11]);
+								text.text('cserélve');
+								array.swap(j, j+1);
+							}
+							else {
+								array.elements[j+1].highlight('blue');
+								array.elements[j].highlight('blue');
+								text.text('jó sorrend');
+							}
+							yield;
+							array.elements[j+1].unhighlight();
+							array.elements[j].unhighlight();
+							opt.syntax.mark(7, 3); yield;
+							opt.syntax.mark(7, 2); yield;
+						}
+						array.elements[i].highlight('green');
+						text.text('legnagyobb indexű elem kész');
+						yield;
+						opt.syntax.mark(5, 3); yield;
+						opt.syntax.mark(5, 2); yield;
+					}
+					array.elements[0].highlight('green');
+					text.text('kész');
+					opt.syntax.unmark();
+				});
+
+			</script>
+		</section>
+	</body>
+</html>
+
+</article>
+
+</section>
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="OwlAnim.html">OwlAnim</a></li><li><a href="OwlDraw.html">OwlDraw</a></li><li><a href="OwlDraw.array.html">array</a></li><li><a href="OwlDraw.arrow.html">arrow</a></li><li><a href="OwlDraw.btElem.html">btElem</a></li><li><a href="OwlDraw.bTree.html">bTree</a></li><li><a href="OwlDraw.circle.html">circle</a></li><li><a href="OwlDraw.connectable.html">connectable</a></li><li><a href="OwlDraw.dllElem.html">dllElem</a></li><li><a href="OwlDraw.dlList.html">dlList</a></li><li><a href="OwlDraw.element.html">element</a></li><li><a href="OwlDraw.group.html">group</a></li><li><a href="OwlDraw.line.html">line</a></li><li><a href="OwlDraw.list.html">list</a></li><li><a href="OwlDraw.listElem.html">listElem</a></li><li><a href="OwlDraw.niceArrow.html">niceArrow</a></li><li><a href="OwlDraw.pointer.html">pointer</a></li><li><a href="OwlDraw.rect.html">rect</a></li><li><a href="OwlDraw.text.html">text</a></li><li><a href="OwlSyntax.html">OwlSyntax</a></li><li><a href="OwlSyntax.c.html">c</a></li><li><a href="OwlSyntax.language.html">language</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tutorial1.html">Buborékrendezés</a></li><li><a href="tutorial-tutorial2.html">Láncolt listába beszúrás</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Jun 16 2017 01:56:22 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

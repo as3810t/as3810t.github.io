@@ -1,0 +1,73 @@
+.highlighter.container {
+	position: relative;
+}
+
+.default.highlighter.container {
+	white-space: pre-wrap;
+	font-family: monospace;
+
+	border: 1px solid #444;
+	background: linear-gradient(to right, #c0c0c0 3em, white 3em, white);
+	padding-top: 1em;
+	padding-bottom: 1em;
+	padding-left: 0.5em;
+	line-height: 1.3em;
+
+	counter-reset: owlhighlighter;
+}
+
+.default.highlighter.container .line {
+	width: 100%;
+	display: inline-block;
+}
+
+.default.highlighter.container .line:nth-child(even){
+	background: white;
+}
+
+.default.highlighter.container .line:nth-child(odd){
+	background: #EFFFFF;
+}
+
+.default.highlighter.container .line::before{
+	counter-increment: owlhighlighter;
+	content: counter(owlhighlighter) ".";
+	display: inline-block;
+	width: 2em;
+	text-align: right;
+	padding-right: 0.5em;
+	margin-right: 1em;
+	color: #444;
+	background: #c0c0c0;
+}
+
+.default.highlighter .keyword {
+	font-weight: bold;
+	color: blue;
+}
+
+.default.highlighter .preprocessor {
+	color: green;
+}
+
+.default.highlighter .block-comment {
+	color: grey;
+	font-style: italic;
+}
+
+.default.highlighter .line-comment {
+	color: grey;
+	font-style: italic;
+}
+
+.default.highlighter .string {
+	color: red;
+}
+
+.default.highlighter .character {
+	color: orange;
+}
+
+.default.highlighter .number {
+	color: green;
+}

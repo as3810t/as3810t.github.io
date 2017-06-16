@@ -1,0 +1,111 @@
+<html>
+	<head>
+		<title>Láncolt listába beszúrás INFOC</title>
+		<meta charset="utf-8">
+		<script language="JavaScript" src="../src/syntax.js"></script>
+		<script language="JavaScript" src="../src/infoc/infoc.js"></script>
+		<script language="JavaScript" src="../src/draw.js"></script>
+		<script language="JavaScript" src="../src/anim.js"></script>
+		<link rel="stylesheet" href="../src/syntax.css">
+		<link rel="stylesheet" href="../src/infoc/infoc.css">
+		<link rel="stylesheet" href="../src/draw.css">
+		<link rel="stylesheet" href="../src/anim.css">
+		<style>
+			.highlight-red circle, .highlight-red rect {
+				fill: red !important;
+			}
+			.highlight-blue circle, .highlight-blue rect  {
+				fill: blue !important;
+			}
+			.highlight-green circle, .highlight-green rect  {
+				fill: green !important;
+			}
+			.buborek .animate, .list .animate {
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<section class="list">
+			<h1>Láncolt listába beszúrás</h1>
+			<script type="application/text" id="listsource" data-language="infoc">
+				ListaElem *mozgo, *uj;
+
+				for (mozgo = eleje; mozgo->kov != NULL; mozgo = mozgo->kov) //1
+					; /* üres ciklus */
+				uj = (ListaElem*) malloc(sizeof(ListaElem));                //2
+				mozgo->kov = uj;
+				uj->kov = NULL;												//3
+			</script>
+			<svg sidth="100%" id="listgraph"></svg>
+			<script language="JavaScript">
+				var anim = new OwlAnim({
+					type: 'afterDraw',
+					draw: 'listgraph',
+					syntax: 'listsource',
+					width: 600,
+					height: 200
+				}, function*(opt) {
+					var list = new OwlDraw.list({x: 150, y: 70, size: 40, num: 4, type: 'empty'});
+					var first = new OwlDraw.group([
+						new OwlDraw.pointer({x: 80, y: 82, width: 15, height: 15, to: list.elements[0].data, top: 'l', fromp: 'r'}),
+						new OwlDraw.text({x: 80, y: 62, txt: 'ListaElem *eleje', class: 'code'})
+					]);
+					var worm = new OwlDraw.group([
+						new OwlDraw.pointer({x: 82, y: 32, width: 15, height: 15, to: null, top: 'l', fromp: 'd'}),
+						new OwlDraw.text({x: 80, y: 12, txt: 'ListaElem *mozgo', class: 'code'})
+					])
+					opt.draw.add(list); opt.draw.add(first); opt.draw.add(worm);
+					var newElem = new OwlDraw.listElem({x: 470, y: 140, size: 40, to: null});
+					newElem.data.highlight('green'); newElem.hide(); opt.draw.add(newElem);
+					yield;
+
+					opt.syntax.mark(3, 1);
+					worm.highlight('red');
+					first.highlight('red');
+					yield;
+					worm.elems[0].bind({to: list.elements[0].data, top: 'u', fromp: 'd'});
+					yield;
+					worm.move({dx: 80, dy: 0});
+					worm.unhighlight();
+					first.unhighlight();
+					yield;
+
+					opt.syntax.mark(3, 2); list.elements[0].pointer.highlight('red'); yield;
+					for(var element = list.elements[0]; element.next != null; ) {
+						opt.syntax.mark(3, 3);
+						worm.highlight('red'); yield;
+						worm.elems[0].bind({to: element.next.data, top: 'u', fromp: 'd'}); yield;
+						worm.move({dx: 80, dy: 0});
+						worm.unhighlight();
+						element.pointer.unhighlight();
+						yield;
+						element = element.next;
+						opt.syntax.mark(3, 2);
+						element.pointer.highlight('red'); yield;
+					}
+
+					list.unhighlight();
+					opt.syntax.mark(5);
+					newElem.show();
+					yield;
+
+					opt.syntax.mark(6);
+					list.elements[3].pointer.bind({to: newElem.data, top: 'l'});
+					yield;
+
+					opt.syntax.mark(7);
+					newElem.pointer.highlight('red');
+					yield;
+
+					opt.syntax.unmark();
+					newElem.move({dx: 0, dy: -70});
+					newElem.pointer.unhighlight();
+					newElem.data.unhighlight();
+					worm.hide();
+
+				});
+			</script>
+		</section>
+	</body>
+</html>

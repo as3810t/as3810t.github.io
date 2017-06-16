@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: syntax.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: syntax.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>let OwlSyntax = (function() {
+	'use strict';
+
+	/**
+	 * Class resposible for syntax highlighting
+	 *
+	 * @property {Object} options - Settings
+	 * @property {string} options.id - The id of DOM element, the code is in
+	 * @property {OwlSyntax.language} [options.language] - Grammar in use
+	 * @property {boolean} [options.html] - If false, the code will not be parsed, or highlighted, it will be the resposibility of user
+	 * @property {Element} source - The DOM element, the source code is in.
+	 * @property {Element} container - The DOM element, the highlighted code is in. Valid after {@link OwlSyntax#render} has run
+	 */
+	class OwlSyntax {
+		/**
+		 * Creates the highlight
+		 *
+		 * @param {string} id - The id of DOM element, the code is in
+		 * @param {Object} options - Settings
+		 * @param {string|OwlSyntax.language} [options.language] - If string, then name of grammar (OwlSyntax[{name}]). If object, then it must be compatible with {@link OwlSyntax.language}. If undefined but the data-language property is set on the source element, then the language will be taken from that property.
+		 * @param {boolean} [options.html] - If false, the code will not be parsed, or highlighted, it will be the resposibility of user
+		 */
+		constructor(id, options) {
+			if(options == undefined) options = {};
+			this.options = options;
+
+			this.source = document.getElementById(id);
+			this.source.id = '';
+			this.options.id = id;
+
+			if(typeof options.language == 'string') this.language = new OwlSyntax[options.language]();
+			else if(typeof options.language == 'object') this.language = options.language;
+			else if(options.language == undefined &amp;&amp; this.source.dataset['language'] != undefined) this.language = new OwlSyntax[this.source.dataset['language']]();
+			else throw new Error('OwlSyntax: Language not provided');
+
+			if(options.html != true) {
+				this.render(this.highlight());
+			}
+		}
+
+		/**
+		 * Renders the given html to dom, in place of source element.
+		 *
+		 * @param {string} html - The html to be rendered.
+		 */
+		render(html) {
+			this.container = document.createElement('div');
+			this.container.innerHTML = html;
+			this.container.classList.add('highlighter');
+			this.container.classList.add('container');
+			this.container.classList.add('default');
+			this.container.id = this.options.id;
+			this.language.container(this.container);
+			this.source.parentNode.insertBefore(this.container, this.source);
+		}
+
+		/**
+		 * Highlightes the text in source element according to the selected grammar
+		 *
+		 * @returns {string} The html, containing the tags for highlighting.
+		 */
+		highlight() {
+			let txt = this.source.innerText.split('\n');
+			txt = this.preprocess(txt);
+
+			for(let i = 0; i &lt; txt.length; i++) {
+				for(let handler in this.language.handlers) {
+					txt[i] = this.language.handle(handler, txt[i]);
+				}
+			}
+
+			txt = this.postprocess(txt);
+			return txt.join('\n');
+		}
+
+		/**
+		 * Preprocesses the text. Splits it to lines, removes empty lines from the beginning, alignes indents, escapes &lt; and >. Calls the preprocess function of grammar (see {@link OwlSyntax.language#preprocess})
+		 *
+		 * @param {string} txt - The source code as plain text
+		 *
+		 * @return {string[]} The source code split to lines, void of empty lines, and indents are corrected, &lt; and > are escaped
+		 */
+		preprocess(txt) {
+			while(txt[0] == '') txt.shift();
+
+			let charNum = 0;
+			for(let i = 0; txt[0][i] == ' ' || txt[0][i] == '\t'; i++) {
+				charNum++;
+			}
+
+			for(let i = 0; i &lt; txt.length; i++) {
+				txt[i] = txt[i].substring(charNum);
+			}
+
+			for(let i = 0; i &lt; txt.length; i++) {
+				txt[i] = this.language.preprocess(txt[i]);
+				txt[i] = txt[i].replace(/\&lt;/g, '&amp;lt;');
+				txt[i].replace(/\>/g, '&amp;gt;');
+			}
+
+			return txt;
+		}
+
+		/**
+		 * Post processes the lines by wrapping them in a &lt;span> element and executing the grammars postprocess function (see {@link OwlSyntax.language#postprocess})
+		 *
+		 * @param {string[]} txt - The highlighted source code in lines
+		 *
+		 * @returns {string[]} The postprocessed source code in lines
+		 */
+		postprocess(txt) {
+			for(let i = 0; i &lt; txt.length; i++) {
+				txt[i] = '&lt;span class="line">' + txt[i] + '&lt;/span>';
+				txt[i] = this.language.postprocess(txt[i]);
+			}
+			return txt;
+		}
+
+		/**
+		 * Marks a line (and segment) to be active. The css class active is appended to the class list. Removes previously activated lines, segments.
+		 *
+		 * @param {number|number[]} line - The index of line to be make it active (1, 2, 3, ...). If an array, then all of the lines will be made active.
+		 * @param {number} [segment] - The index of segment inside of active line to make it active (1, 2, 3, ...)
+		 */
+		mark(line, segment) {
+			this.unmark();
+			if(typeof line == 'number') {
+				this.line = this.container.children[line - 1];
+				this.line.classList.add('active');
+				if(segment != undefined) {
+					this.segment = this.line.querySelectorAll('.segment')[segment - 1];
+					this.segment.classList.add('active');
+				}
+			}
+			else if(line instanceof Array) {
+				this.line = [];
+				for(let i = 0; i &lt; line.length; i++) {
+					this.container.children[line[i] - 1].classList.add('active');
+					this.line.push(this.container.children[line[i] - 1]);
+				}
+			}
+		}
+
+		/**
+		 * Removes previously activated lines, segments.
+		 */
+		unmark() {
+			if(this.line != undefined &amp;&amp; this.line instanceof Element) this.line.classList.remove('active');
+			else if(this.line != undefined &amp;&amp; this.line instanceof Array) {
+				for(let i = 0; i &lt; this.line.length; i++) {
+					this.line[i].classList.remove('active');
+				}
+			}
+			if(this.segment != undefined) this.segment.classList.remove('active');
+			this.line = undefined;
+			this.segment = undefined;
+		}
+
+	}
+
+	/**
+	 * Class representing the base grammars
+	 * @memberof OwlSyntax
+	 *
+	 * @property {Function[]} handlers - Associative array of handler functions ((txt)=>{return txt;}). This array of handlers will be iterated through, and each element will be called for all of the lines of source code.
+	 */
+	OwlSyntax.language = class {
+		/**
+		 * Creates the grammars
+		 */
+		constructor() {
+			this.handlers = [];
+		}
+
+		/**
+		 * Runs a handler. A handler highlightes the proper parts of code, and returns the result in html.
+		 *
+		 * @param {string} handler - Name of handler
+		 * @param {string} txt - The line of code, to be processed
+		 *
+		 * @returns {string} The highlighted code in html
+		 */
+		handle(handler, txt) {
+			return this[this.handlers[handler]](txt);
+		}
+
+		/**
+		 * This method makes it possible for the grammar to manipulate the container DOM element.
+		 *
+		 * @param {Element} container - The DOMELement of container
+		 */
+		container(container) {
+			return;
+		}
+
+		/**
+		 * Preprocesses the text. Runs before highlighting.
+		 *
+		 * @param {string} txt - Raw line of source code
+		 * @returns {string} Preprocessed line of source code
+		 */
+		preprocess(txt) {
+			return txt;
+		}
+
+		/**
+		 * Postprocesses the text. Runs after highlighting.
+		 *
+		 * @param {string} txt - Raw line of source code
+		 * @returns {string} Postprocessed line of source code
+		 */
+		postprocess(txt) {
+			return txt;
+		}
+	}
+
+	/**
+	 * Grammar for c
+	 * @memberof OwlSyntax
+	 * @extends OwlSyntax.language
+	 *
+	 * @property {regex} preprocessor - Regex for identifying and selecting preprocessor directives
+	 * @property {regex} block-comment - Regex for identifying and selecting block comments
+	 * @property {regex} line-comment - Regex for identifying and selecting line comments
+	 * @property {regex} string - Regex for identifying and selecting strings
+	 * @property {regex} character - Regex for identifying and selecting characters
+	 * @property {regex} keyword - Regex for identifying and selecting keywords
+	 * @property {regex} boolean - Regex for identifying and selecting booleans
+	 * @property {regex} function - Regex for identifying and selecting function names
+	 * @property {regex} number - Regex for identifying and selecting numbers
+	 * @property {regex} for - Regex for identifying and selecting for cycles
+	 * @property {regex} segment-begin - Regex for identifying and selecting segment begins (/*#*\/)
+	 * @property {regex} segment-begin - Regex for identifying and selecting segment ends (/*$*\/)
+	 */
+	OwlSyntax.c = class extends OwlSyntax.language {
+		constructor() {
+			super();
+			this['preprocessor'] = /(^#.*$)/g;
+			this['block-comment'] = /(\/\*.*\*\/)/g;
+			this['line-comment'] = /(\/\/.*)/g;
+			this['string'] = /"(.*?)"/g;
+			this['character'] = /'(.*?)'/g;
+			this['keyword'] =  /\b(asm|typeof|inline|auto|break|case|char|const|continue|default|do|double|else|enum|extern|float|for|goto|if|int|long|register|return|short|signed|sizeof|static|struct|switch|typedef|union|unsigned|void|volatile|while)(?=[^\w])/g;
+			this['boolean'] = /\b(true|false)/g;
+			this['function'] = /([a-z0-9_]+(?=\())/g;
+			this['number'] = /\b(-?(?:0x[\da-f]+|\d*\.?\d+(?:e[+-]?\d+)?)[ful]*)\b/g;
+			this['for'] = /for[\s]*\((.*);(.*);(.*)\)/g;
+			this['segment-begin'] = /(\/\*#\*\/)/g;
+			this['segment-end'] = /(\/\*\$\*\/)/g;
+
+			this.handlers['string'] = 'stringHandler';
+			this.handlers['character'] = 'characterHandler';
+			this.handlers['preprocessor'] = 'preprocessorHandler';
+			this.handlers['segment-begin'] = 'segmentBeginHandler';
+			this.handlers['segment-end'] = 'segmentEndHandler';
+			this.handlers['block-comment'] = 'blockCommentHandler';
+			this.handlers['line-comment'] = 'lineCommentHandler';
+			this.handlers['for'] = 'forHandler';
+			this.handlers['keyword'] = 'keywordHandler';
+			this.handlers['boolean'] = 'booleanHandler';
+			this.handlers['function'] = 'functionHandler';
+			this.handlers['number'] = 'numberHandler';
+		}
+
+		/**
+		 * Handler for strings
+		 *
+		 * @param {string} txt - The unformatted line
+		 * @returns {string} The line including a &lt;span> to format the string
+		 */
+		stringHandler(txt) {
+			return txt.replace(this['string'], '&lt;span class="string">"$1"&lt;/span>');
+		}
+
+		/**
+		 * Handler for characters
+		 *
+		 * @param {string} txt - The unformatted line
+		 * @returns {string} The line including a &lt;span> to format the character
+		 */
+		characterHandler(txt) {
+			return txt.replace(this['character'], '&lt;span class="character">\'$1\'&lt;/span>');
+		}
+
+		/**
+		 * Handler for preprocessor directives
+		 *
+		 * @param {string} txt - The unformatted line
+		 * @returns {string} The line including a &lt;span> to format the directive
+		 */
+		preprocessorHandler(txt) {
+			return txt.replace(this['preprocessor'], '&lt;span class="preprocessor">$1&lt;/span>');
+		}
+
+		/**
+		 * Handler for block comments
+		 *
+		 * @param {string} txt - The unformatted line
+		 * @returns {string} The line including a &lt;span> to format the block comment
+		 */
+		blockCommentHandler(txt) {
+			if(txt == '/*#*/') return '&lt;span class="segment">';
+			else if(txt == '/*$*/') return '&lt;/span>';
+			else return txt.replace(this['block-comment'], '&lt;span class="block-comment">$1&lt;/span>');
+		}
+
+		/**
+		 * Handler for line comments
+		 *
+		 * @param {string} txt - The unformatted line
+		 * @returns {string} The line including a &lt;span> to format the line comment
+		 */
+		lineCommentHandler(txt) {
+			return txt.replace(this['line-comment'], '&lt;span class="line-comment">$1&lt;/span>');
+		}
+
+		/**
+		 * Handler for keywords
+		 *
+		 * @param {string} txt - The unformatted line
+		 * @returns {string} The line including a &lt;span> to format the keyword
+		 */
+		keywordHandler(txt) {
+			return txt.replace(this['keyword'], '&lt;span class="keyword">$1&lt;/span>');
+		}
+
+		/**
+		 * Handler for booleans
+		 *
+		 * @param {string} txt - The unformatted line
+		 * @returns {string} The line including a &lt;span> to format the boolean
+		 */
+		booleanHandler(txt) {
+			return txt.replace(this['boolean'], '&lt;span class="boolean">$1&lt;/span>');
+		}
+
+		/**
+		 * Handler for function names
+		 *
+		 * @param {string} txt - The unformatted line
+		 * @returns {string} The line including a &lt;span> to format the function name
+		 */
+		functionHandler(txt) {
+			return txt.replace(this['function'], '&lt;span class="function">$1&lt;/span>');
+		}
+
+		/**
+		 * Handler for numbers
+		 *
+		 * @param {string} txt - The unformatted line
+		 * @returns {string} The line including a &lt;span> to format the number
+		 */
+		numberHandler(txt) {
+			return txt.replace(this['number'], '&lt;span class="number">$1&lt;/span>');
+		}
+
+		/**
+		 * Handler for for cycles
+		 *
+		 * @param {string} txt - The unformatted line
+		 * @returns {string} The line including a &lt;span> to format the for cycle
+		 */
+		forHandler(txt) {
+			txt = txt.replace(/&amp;lt;/g, '|-|');
+			txt = txt.replace(/&amp;gt;/g, '|+|');
+			txt = txt.replace(this['for'], '&lt;span class="forcycle">for(&lt;span class="segment">$1&lt;/span>;&lt;span class="segment">$2&lt;/span>;&lt;span class="segment">$3&lt;/span>)&lt;/span>');
+			txt = txt.replace(/\|\-\|/g, '&amp;lt;');
+			txt = txt.replace(/\|\+\|/g, '&amp;gt;');
+			return txt;
+		}
+
+		/**
+		 * Handler for segment begins
+		 *
+		 * @param {string} txt - The unformatted line
+		 * @returns {string} The line including a &lt;span> to format the segment begin
+		 */
+		segmentBeginHandler(txt) {
+			return txt.replace(this['segment-begin'], '&lt;span class="segment">');
+		}
+
+		/**
+		 * Handler for segment ends
+		 *
+		 * @param {string} txt - The unformatted line
+		 * @returns {string} The line including a &lt;span> to format the segment end
+		 */
+		segmentEndHandler(txt) {
+			return txt.replace(this['segment-end'], '&lt;/span>');
+		}
+	}
+
+	return OwlSyntax;
+})();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="OwlAnim.html">OwlAnim</a></li><li><a href="OwlDraw.html">OwlDraw</a></li><li><a href="OwlDraw.array.html">array</a></li><li><a href="OwlDraw.arrow.html">arrow</a></li><li><a href="OwlDraw.btElem.html">btElem</a></li><li><a href="OwlDraw.bTree.html">bTree</a></li><li><a href="OwlDraw.circle.html">circle</a></li><li><a href="OwlDraw.connectable.html">connectable</a></li><li><a href="OwlDraw.dllElem.html">dllElem</a></li><li><a href="OwlDraw.dlList.html">dlList</a></li><li><a href="OwlDraw.element.html">element</a></li><li><a href="OwlDraw.group.html">group</a></li><li><a href="OwlDraw.line.html">line</a></li><li><a href="OwlDraw.list.html">list</a></li><li><a href="OwlDraw.listElem.html">listElem</a></li><li><a href="OwlDraw.niceArrow.html">niceArrow</a></li><li><a href="OwlDraw.pointer.html">pointer</a></li><li><a href="OwlDraw.rect.html">rect</a></li><li><a href="OwlDraw.text.html">text</a></li><li><a href="OwlSyntax.html">OwlSyntax</a></li><li><a href="OwlSyntax.c.html">c</a></li><li><a href="OwlSyntax.language.html">language</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tutorial1.html">Buborékrendezés</a></li><li><a href="tutorial-tutorial2.html">Láncolt listába beszúrás</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Jun 16 2017 01:56:22 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

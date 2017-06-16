@@ -1,0 +1,99 @@
+.draw {
+	width: 100%;
+	height: auto;
+	transition: all 0.5s linear;
+	font-size: 100%;
+	font-family: 'open sans', 'droid sans', 'dejavu sans', 'verdana', 'arial', sans-serif;
+	position: relative;
+}
+
+.draw g, .draw circle, .draw rect, .draw text {
+	transition: all 0.5s linear;
+}
+
+.draw .circle circle {
+	fill: #f0e8d9;
+	stroke: #d1c2a6;
+	stroke-width: 1px;
+}
+
+.draw .circle text {
+	text-anchor: middle;
+    dominant-baseline: central;
+    cursor: inherit;
+	font-weight: bold;
+	font-size: 1.5em;
+}
+
+.draw .rect rect {
+	fill: #f0e8d9;
+	stroke: #d1c2a6;
+	stroke-width: 1px;
+}
+
+.draw .rect text {
+	text-anchor: middle;
+    dominant-baseline: central;
+    cursor: inherit;
+	font-weight: bold;
+	font-size: 1.5em;
+}
+
+.draw .pointer rect {
+	fill: yellow;
+	stroke: black;
+	stroke-width: 3px;
+}
+
+.draw .pointer text {
+	font-weight: normal;
+	font-size: 0.8em;
+}
+
+.draw .line line {
+	stroke: black;
+	stroke-width: 1px;
+}
+
+.draw .arrow line {
+	stroke: black;
+	stroke-width: 1px;
+}
+
+.draw .niceArrow path {
+	stroke: black;
+	stroke-width: 1px;
+}
+
+.draw .text text {
+	text-anchor: middle;
+    dominant-baseline: central;
+    cursor: inherit;
+	font-size: 0.8em;
+}
+
+.draw .text.code text {
+	font-family: monospace;
+}
+
+.draw .array circle, .draw .array text {
+	transition: all 0.5s ease;
+}
+
+.draw .listElem.rect rect {
+	stroke: black;
+	stroke-width: 3px;
+	fill: cornflowerblue;
+}
+
+.draw .dllElem.rect rect {
+	stroke: black;
+	stroke-width: 3px;
+	fill: cornflowerblue;
+}
+
+.draw .btElem.rect rect {
+	stroke: black;
+	stroke-width: 3px;
+	fill: cornflowerblue;
+}

@@ -1,0 +1,15 @@
+{
+  "name": "infoc",
+  "version": "1.0.0",
+  "description": "Animation framework for infoc",
+  "main": "index.html",
+  "dependencies": {
+    "jsdoc": "^3.4.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+	"jsdoc": "jsdoc -c ./conf.json"
+  },
+  "author": "",
+  "license": "GPLv3"
+}

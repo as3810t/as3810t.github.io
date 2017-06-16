@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: OwlAnim</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: OwlAnim</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>OwlAnim</h2>
+        
+            <div class="class-description"><p>Class responsible for animation handling</p></div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="OwlAnim"><span class="type-signature"></span>new OwlAnim<span class="signature">(options, type, animation)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Creates an animation</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>options</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">Element</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>If 'inSyntax' then the buttons will be displayed in the top-right corner of the atatched <a href="OwlSyntax.html"><code>OwlSyntax</code></a> element. If 'afterSyntax' then the buttons will be displayed after the atatched <a href="OwlSyntax.html"><code>OwlSyntax</code></a> element. If 'afterDraw' then the buttons will be displayed after the atatched <a href="OwlDraw.html"><code>OwlDraw</code></a> element. Otherwise if string, the buttons will be the children of the DOM element with id matching this parameter. If instance of Element then the buttons will be children of this element.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options.draw</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="OwlDraw.html">OwlDraw</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>If string, then an empty <a href="OwlDraw.html"><code>OwlDraw</code></a> instance will be created in the element with id matching this parameter, if <a href="OwlDraw.html"><code>OwlDraw</code></a> instance then this instance will be used.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options.width</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Width of the svg canvas, if it needs to be created</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options.height</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Height of the svg canvas, if it needs to be created</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options.syntax</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="OwlSyntax.html">OwlSyntax</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>If string, then an empty <a href="OwlSyntax.html"><code>OwlSyntax</code></a> instance will be created in the element with id matching this parameter, if <a href="OwlSyntax.html"><code>OwlSyntax</code></a> instance then this instance will be used.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options.language</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="OwlSyntax.language.html">OwlSyntax.language</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>If string, then name of grammar (OwlSyntax[{name}]). If object, then it must be compatible with <a href="OwlSyntax.language.html"><code>OwlSyntax.language</code></a>. If undefined but the data-language property is set on the source element, then the language will be taken from that property.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options.buttons</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Object describing the buttons. By default, start, next, continuous buttons are shown, continuousQuick is hidden.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>start</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Object describing the start button. By default, it is shown. If false the button willbe hidden.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>text</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Text to be displayed in start button. Default: Start</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>next</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Object describing the next button. By default, it is shown. If false the button willbe hidden.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>text</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Text to be displayed in next button. Default: Következő</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>continuous</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Object describing the continuous button. By default, it is shown. If false the button willbe hidden.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>text</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Text to be displayed in continuous button. Default: Folyamatos</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>continuousQuick</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Object describing the continuous quick button. By default, it is hidden. If defined, the button will be shown.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>text</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Text to be displayed in continuous quick button. Default: Folyamatos gyors</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>buttonName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Custom button can be defined by defining custom named (buttonName) properties on this object.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>text</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Text to be displayed in customButton button.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>click</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The event handler that will be executed on button click. Note, that this function will be bounded to this <a href="OwlAnim.html"><code>OwlAnim</code></a> instance (arrow functions can not be bounded, so use old style functions).</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>animation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The generator function that implements the animation, It accepts an Object parameter. The object has two properties. The .draw which holds the <a href="OwlDraw.html"><code>OwlDraw</code></a> instance if it is part of the animation, and .syntax which holds the <a href="OwlSyntax.html"><code>OwlSyntax</code></a> instance if it is part of the animation.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>animation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The generator function that implements the animation, It accepts an Object parameter. The object has two properties. The .draw which holds the <a href="OwlDraw.html"><code>OwlDraw</code></a> instance if it is part of the animation, and .syntax which holds the <a href="OwlSyntax.html"><code>OwlSyntax</code></a> instance if it is part of the animation.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>generator</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Generator</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The currently active generator instance</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>timer</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The currently active setTimeout identifier</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>draw</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="OwlDraw.html">OwlDraw</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The instance of drawing object. Parameter of animation generator.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>syntax</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="OwlDraw.html">OwlDraw</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The instance of drawing object. Parameter of animation generator.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="anim.js.html">anim.js</a>, <a href="anim.js.html#line16">line 16</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="continuous"><span class="type-signature"></span>continuous<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+    <p class="summary"><p>Executes the animation until the end (if no return, then endlessly)</p>.</p>
+    
+
+
+
+<div class="description">
+    <p>Executes the animation until the end (if no return, then endlessly)</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="anim.js.html">anim.js</a>, <a href="anim.js.html#line142">line 142</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="continuousQuick"><span class="type-signature"></span>continuousQuick<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+    <p class="summary"><p>Executes the animation until the end with quicker speed (if no return, then endlessly)</p>.</p>
+    
+
+
+
+<div class="description">
+    <p>Executes the animation until the end with quicker speed (if no return, then endlessly)</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="anim.js.html">anim.js</a>, <a href="anim.js.html#line150">line 150</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="next"><span class="type-signature"></span>next<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+    <p class="summary"><p>Executes the animation until the next yield</p>.</p>
+    
+
+
+
+<div class="description">
+    <p>Executes the animation until the next yield</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="anim.js.html">anim.js</a>, <a href="anim.js.html#line135">line 135</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="start"><span class="type-signature"></span>start<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+    <p class="summary">Prepares the animation.</p>
+    
+
+
+
+<div class="description">
+    <p>Prepares the animation. Creates the generator instance, and executes it until the first yield, resets the timer, <a href="OwlDraw.html"><code>OwlDraw</code></a> and <a href="OwlSyntax.html"><code>OwlSyntax</code></a> instance.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="anim.js.html">anim.js</a>, <a href="anim.js.html#line124">line 124</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="OwlAnim.html">OwlAnim</a></li><li><a href="OwlDraw.html">OwlDraw</a></li><li><a href="OwlDraw.array.html">array</a></li><li><a href="OwlDraw.arrow.html">arrow</a></li><li><a href="OwlDraw.btElem.html">btElem</a></li><li><a href="OwlDraw.bTree.html">bTree</a></li><li><a href="OwlDraw.circle.html">circle</a></li><li><a href="OwlDraw.connectable.html">connectable</a></li><li><a href="OwlDraw.dllElem.html">dllElem</a></li><li><a href="OwlDraw.dlList.html">dlList</a></li><li><a href="OwlDraw.element.html">element</a></li><li><a href="OwlDraw.group.html">group</a></li><li><a href="OwlDraw.line.html">line</a></li><li><a href="OwlDraw.list.html">list</a></li><li><a href="OwlDraw.listElem.html">listElem</a></li><li><a href="OwlDraw.niceArrow.html">niceArrow</a></li><li><a href="OwlDraw.pointer.html">pointer</a></li><li><a href="OwlDraw.rect.html">rect</a></li><li><a href="OwlDraw.text.html">text</a></li><li><a href="OwlSyntax.html">OwlSyntax</a></li><li><a href="OwlSyntax.c.html">c</a></li><li><a href="OwlSyntax.language.html">language</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-tutorial1.html">Buborékrendezés</a></li><li><a href="tutorial-tutorial2.html">Láncolt listába beszúrás</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Jun 16 2017 01:56:22 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<html>
+	<head>
+		<title>Buborékrendezés - INFOC</title>
+		<meta charset="utf-8">
+		<script language="JavaScript" src="../src/syntax.js"></script>
+		<script language="JavaScript" src="../src/infoc/infoc.js"></script>
+		<script language="JavaScript" src="../src/draw.js"></script>
+		<script language="JavaScript" src="../src/anim.js"></script>
+		<link rel="stylesheet" href="../src/syntax.css">
+		<link rel="stylesheet" href="../src/infoc/infoc.css">
+		<link rel="stylesheet" href="../src/draw.css">
+		<link rel="stylesheet" href="../src/anim.css">
+		<style>
+			.highlight-red circle, .highlight-red rect {
+				fill: red !important;
+			}
+			.highlight-blue circle, .highlight-blue rect  {
+				fill: blue !important;
+			}
+			.highlight-green circle, .highlight-green rect  {
+				fill: green !important;
+			}
+			.buborek .animate, .list .animate {
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<section class="buborek">
+			<h1>Buborékrendezés</h1>
+			<script type="application/text" id="bubsource" data-language="infoc">
+				void buborek(double *t, int db) {
+					int i, j;
+
+					/* egyre rövidebb tömbrészletek ciklusa */
+					for (i = db-1; i > 0; --i) {
+					  /* egymás utáni párok ciklusa */
+						for (j = 0; j < i; ++j) {
+							if (t[j+1] < t[j]) {      //összehasonlítás
+								double temp = t[j];
+								t[j] = t[j+1];         //csere
+								t[j+1] = temp;
+							}
+						}
+					}
+				}
+			</script>
+			<svg sidth="100%" id="bubgraph"></svg>
+			<script language="JavaScript">
+				var anim = new OwlAnim({
+					type: 'afterDraw',
+					draw: 'bubgraph',
+					syntax: 'bubsource',
+					width: 600,
+					height: 100
+				}, function*(opt) {
+					var array = new OwlDraw.array({x:100, y: 50, radius: 20, num: 9, type: 'succeeding', sort: 'shuffle'});
+					var text = new OwlDraw.text({x: 300, y: 70, txt: 'új tömb'});
+					opt.draw.add(array); opt.draw.add(text);
+					yield;
+
+					opt.syntax.mark(5, 1); yield;
+					opt.syntax.mark(5, 2); yield;
+					for(let i = array.elements.length-1; i > 0; i--) {
+						opt.syntax.mark(7, 1); yield;
+						opt.syntax.mark(7, 2); yield;
+						for(let j = 0; j < i; j++) {
+							opt.syntax.mark(8);
+							if (array.elements[j+1].val < array.elements[j].val) {
+								array.elements[j+1].highlight('red');
+								array.elements[j].highlight('red');
+								text.text('csere kell');
+								yield;
+								opt.syntax.mark([9, 10, 11]);
+								text.text('cserélve');
+								array.swap(j, j+1);
+							}
+							else {
+								array.elements[j+1].highlight('blue');
+								array.elements[j].highlight('blue');
+								text.text('jó sorrend');
+							}
+							yield;
+							array.elements[j+1].unhighlight();
+							array.elements[j].unhighlight();
+							opt.syntax.mark(7, 3); yield;
+							opt.syntax.mark(7, 2); yield;
+						}
+						array.elements[i].highlight('green');
+						text.text('legnagyobb indexű elem kész');
+						yield;
+						opt.syntax.mark(5, 3); yield;
+						opt.syntax.mark(5, 2); yield;
+					}
+					array.elements[0].highlight('green');
+					text.text('kész');
+					opt.syntax.unmark();
+				});
+
+			</script>
+		</section>
+	</body>
+</html>
