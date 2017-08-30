@@ -8,7 +8,8 @@
   },
   "devDependencies": {},
   "scripts": {
-	"jsdoc": "jsdoc -c ./conf.json"
+	"jsdoc": "jsdoc -c ./conf.json",
+	"build": "node ./main.js"
   },
   "author": "",
   "license": "GPLv3"

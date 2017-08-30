@@ -1,4 +1,4 @@
-let OwlDraw = (function() {
+var OwlDraw = (function() {
 	'use strict';
 	const DURATION = 0.5;
 	const XMLNS = "http://www.w3.org/2000/svg";

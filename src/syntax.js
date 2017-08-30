@@ -1,4 +1,4 @@
-let OwlSyntax = (function() {
+var OwlSyntax = (function() {
 	'use strict';
 
 	/**

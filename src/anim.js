@@ -1,4 +1,4 @@
-let OwlAnim = (function() {
+var OwlAnim = (function() {
 	'use strict';
 
 	let STEP = 0.5;
