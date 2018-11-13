@@ -380,9 +380,9 @@ var OwlDraw = (function() {
 				circle.style.fill = mode.fill || '';
 				g.appendChild(circle);
 
-				let text = document.createElementNS(XMLNS, 'text');
-				if(mode.txt != undefined) text.innerHTML = mode.txt;
-				g.appendChild(text);
+				this.text = document.createElementNS(XMLNS, 'text');
+				if(mode.txt != undefined) this.text.innerHTML = mode.txt;
+				g.appendChild(this.text);
 
 				this.container.push(g);
 			}
@@ -399,6 +399,14 @@ var OwlDraw = (function() {
 			let x = (fromp == 'l' ? this.x-this.radius-2 : (fromp == 'r' ? this.x+this.radius+2 : this.x));
 			let y = (fromp == 'u' ? this.y-this.radius-2 : (fromp == 'd' ? this.y+this.radius+2 : this.y));
 			return {x:x, y:y};
+		}
+
+		/**
+		 * Sets the text in the circle
+		 * @param {string} txt - The text to set
+		 */
+		setText(txt) {
+			this.text.innerHTML = txt;
 		}
 	}
 
@@ -458,11 +466,11 @@ var OwlDraw = (function() {
 				rect.style.fill = mode.fill || '';
 				g.appendChild(rect);
 
-				let text = document.createElementNS(XMLNS, 'text');
-				text.innerHTML = mode.txt || '';
-				text.setAttributeNS(null, 'x', (this.width/2) + 'px');
-				text.setAttributeNS(null, 'y', (this.height/2) + 'px');
-				g.appendChild(text);
+				this.text = document.createElementNS(XMLNS, 'text');
+				this.text.innerHTML = mode.txt || '';
+				this.text.setAttributeNS(null, 'x', (this.width/2) + 'px');
+				this.text.setAttributeNS(null, 'y', (this.height/2) + 'px');
+				g.appendChild(this.text);
 
 				this.container.push(g);
 			}
@@ -498,6 +506,14 @@ var OwlDraw = (function() {
 			let x = (fromp == 'l' ? this.x : (fromp == 'r' ? this.x2 : ((this.x + this.x2) / 2)));
 			let y = (fromp == 'u' ? this.y : (fromp == 'd' ? this.y2 : ((this.y + this.y2) / 2)));
 			return {x:x, y:y};
+		}
+
+		/**
+		 * Sets the text in the circle
+		 * @param {string} txt - The text to set
+		 */
+		setText(txt) {
+			this.text.innerHTML = txt;
 		}
 	}
 
@@ -1254,7 +1270,9 @@ var OwlDraw = (function() {
 		 * @param {Object} options - Options
 		 * @param {number} options.x - x-coordinate of the first of circle (other circles will have 2*radius distance between each other)
 		 * @param {number} options.y - y-coordinate of the first of circle (other circles will have the same y-coordinate)
-		 * @param {number} options.radius - radius of circles
+		 * @param {number} [options.radius] - radius of circles
+		 * @param {number} [options.width] - width of elements
+		 * @param {number} [options.height] - height of elements
 		 * @param {string} [options.class] - list of class that will be added to the DOM element
 		 * @param {string} [options.stroke] - color of stroke, that applies to the circle
 		 * @param {number} [options.strokeWidth] - width of stroke, that applies to the circle
@@ -1275,11 +1293,17 @@ var OwlDraw = (function() {
 			this.elements = [];
 
 			for(let i = 0; i < this.num; i++) {
-				let circle = new OwlDraw.circle({x: options.x + i*(2.5*options.radius), y: options.y, radius: options.radius, txt: num[i].toString(), stroke: options.stroke, strokeWidth: options.strokeWidth, fill: options.fill, class: (options.class || '') + ' array'});
-				circle.val = num[i];
+				let elem;
+				if(options.radius !== undefined) {
+					elem = new OwlDraw.circle({x: options.x + i*(2.5*options.radius), y: options.y, radius: options.radius, txt: num[i] !== undefined ? num[i].toString() : '', stroke: options.stroke, strokeWidth: options.strokeWidth, fill: options.fill, class: (options.class || '') + ' array'});
+				}
+				else {
+					elem = new OwlDraw.rect({x: options.x + i*options.width, y: options.y, width: options.width, height: options.height, txt: num[i] !== undefined ? num[i].toString() : '', stroke: options.stroke, strokeWidth: options.strokeWidth, fill: options.fill, class: (options.class || '') + ' array'})
+				}
+				elem.val = num[i] !== undefined ? num[i] : '';
 
-				this.elements.push(circle);
-				this.add(circle);
+				this.elements.push(elem);
+				this.add(elem);
 			}
 		}
 
