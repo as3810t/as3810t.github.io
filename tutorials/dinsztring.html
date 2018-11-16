@@ -20,8 +20,29 @@
 			.highlight-green circle, .highlight-green rect  {
 				fill: green !important;
 			}
-			.buborek .animate, .list .animate {
+			.highlighter {
+				width: 100%;
+				max-width: 700px;
+			}
+			svg {
+				width: 100%;
+				max-width: 700px;
+			}
+			p {
+				text-align: justify;
+				width: 100%;
+				max-width: 700px;
+			}
+			.animate {
+				width: 100%;
+				max-width: 700px;
 				text-align: center;
+			}
+			article {
+				width: 100%;
+				max-width: 700px;
+				margin-left: auto;
+				margin-right: auto;
 			}
 		</style>
 	</head>
@@ -244,7 +265,7 @@
 					void beszur(char** s, char mit) {
 						char* regi_adat = *s;
 						int len = strlen(regi_adat);
-						uj_adat = (char*) malloc((len+2) * sizeof(char)); // új memória foglalása
+						char* uj_adat = (char*) malloc((len+2) * sizeof(char)); // új memória foglalása
 	
 						uj_adat[0] = mit; // új elem beszúrása
 						for(int i = 0; i < len; i++) {
@@ -354,7 +375,7 @@
 					void beszur(char** s, int hova, char mit) {
 						char* regi_adat = *s;
 						int len = strlen(regi_adat);
-						uj_adat = (char*) malloc((len+2) * sizeof(char)); // új memória foglalása
+						char* uj_adat = (char*) malloc((len+2) * sizeof(char)); // új memória foglalása
 	 
 						for(int i = 0, j = 0; i < len; i++, j++) {
 							if(j == hova) {
@@ -474,20 +495,22 @@
 				</script>
 			</section>
 			<section>
-				<h2>Törlés tömb végéről</h2>
+				<h2>Törlés sztring végéről</h2>
 
-				<p>Természetesen az is előforduló feladat, hogy a dinamikus tömbből törölni kell. Ennél a probléma fordított, ugyanis kevesebb memóriára lesz szükség, mint ami jelenleg foglalva van. C-ben a nyújtáshoz hasonlóan a zsugorítás sem oldható meg egyszerűen. Itt is szükséges egy új tömb lefoglalása, amibe a megfelelő elemek át lesznek másolva. A trükk itt az, hogy az utolsó elem, sosem lesz átmásolva az új helyre.</p>
+				<p>Szintén feladat lehet a dinamikus sztringekből való törlés. Ez az alább látható módon valósítható meg. Érdemes megfigyelni a lefoglalandó memória méretét. A sztring hosszánál a lezáró nulla miatt eggyel nagyobb terület kéne, de mivel eggyel kevesebb karaktert tárolunk, ezek kiejtik egymást. Továbbá itt a ciklust érdemes nem a lezáró nulláig vinni, mert ahhoz előre kéne címezni a tömbben, amit nem biztos, hogy meg tudunk tenni.</p>
 				<script type="application/text" id="src5" data-language="infoc">
-					void torol(DinTomb* t) {
-						uj_adat = (int*) malloc((t->db-1) * sizeof(int)); // új memória foglalása
+					void torol(char** s) {
+						char* regi_adat = *s;
+						int len = strlen(regi_adat);
+						char* uj_adat = (char*) malloc((len) * sizeof(char)); // új memória foglalása
 		
-						for(int i = 0; i < t->db-1; i++) { // a ciklus csak db-1-ig megy!
-							uj_adat[j] = t->adat[i]; // régi elemek átmásolása
+						for(int i = 0; i < len - 1; i++) { // a ciklus csak len-1-ig megy!
+							uj_adat[j] = regi_adat[i]; // régi elemek átmásolása
 						}
 	
-						t->db--; // új méret beállítása
-						free(t->adat); // régi memória felszabadítása
-						t->adat = uj_adat;
+						uj_adat[len-1] = '\0'; // lezáró nulla
+						free(regi_adat); // régi memória felszabadítása
+						*s = uj_adat;
 					}
 				</script>
 				<svg width="100%" id="dest5"></svg>
@@ -500,31 +523,42 @@
 						height: 200
 					}, function*(opt) {
 
-						var array = new OwlDraw.array({x:200, y: 20, width: 40, height: 40, num: 6, type: 'random'});
+						var array = new OwlDraw.array({x:200, y: 20, width: 40, height: 40, num: 7, type: 'elements'}, ['k', 'o', 'r', 't', 'e', 'k', '\\0']);
 						var adat = new OwlDraw.pointer({x: 120, y: 20, width: 30, height: 30, to: array.elements[0], fromp: 'r', top: 'l'});
-						var db = new OwlDraw.rect({x: 120, y: 50, width: 30, height:30, txt: array.elements.length});
-						var text = new OwlDraw.text({x: 135, y: 75, txt: '*t'});
-						opt.draw.add(array); opt.draw.add(text); opt.draw.add(adat); opt.draw.add(db);
+						var text = new OwlDraw.text({x: 135, y: 50, txt: '*s'});
+						opt.draw.add(array); opt.draw.add(text); opt.draw.add(adat);
 
 						var t_pointer = new OwlDraw.pointer({x: 20, y: 20, width: 30, height: 30, to: adat, fromp: 'r', top: 'l'});
-						var text = new OwlDraw.text({x: 35, y: 55, txt: 't'});
+						var text = new OwlDraw.text({x: 35, y: 50, txt: 's'});
 						opt.draw.add(t_pointer); opt.draw.add(text);
+
+						var regi_adat = new OwlDraw.pointer({x: 120, y: 75, width: 30, height: 30, to: null}); regi_adat.hide();
+						var regi_text = new OwlDraw.text({x: 135, y: 105, txt: 'regi_adat'}); regi_text.hide();
+						opt.draw.add(regi_adat); opt.draw.add(regi_text);
 	
-						var uj_array = new OwlDraw.array({x:200, y: 100, width: 40, height: 40, num: 5, type: 'empty'}); uj_array.hide();
-						var uj_adat = new OwlDraw.pointer({x: 120, y: 100, width: 30, height: 30, to: null}); uj_adat.hide();
-						var uj_text = new OwlDraw.text({x: 135, y: 135, txt: 'uj_t'}); uj_text.hide();
+						var uj_array = new OwlDraw.array({x:200, y: 100, width: 40, height: 40, num: 6, type: 'empty'}); uj_array.hide();
+						var uj_adat = new OwlDraw.pointer({x: 120, y: 130, width: 30, height: 30, to: null}); uj_adat.hide();
+						var uj_text = new OwlDraw.text({x: 135, y: 155, txt: 'uj_adat'}); uj_text.hide();
 						opt.draw.add(uj_array); opt.draw.add(uj_text); opt.draw.add(uj_adat); 
 						yield;
 	
 						opt.syntax.mark(2);
+						regi_adat.show();
+						regi_text.show();
+						regi_adat.bind({to: array.elements[0], fromp: 'r', top: 'l'});
+						yield;
+
+						opt.syntax.mark(3); yield;
+
+						opt.syntax.mark(4);
 						uj_adat.show(); uj_array.show(); uj_text.show();
 						uj_adat.bind({to: uj_array.elements[0], fromp: 'r', top: 'l'});
 						yield;
 
-						opt.syntax.mark(4, 1); yield;
-						opt.syntax.mark(4, 2); yield;
-						for(let i = 0; i < array.elements.length-1; i++) {
-							opt.syntax.mark(5); 
+						opt.syntax.mark(6, 1); yield;
+						opt.syntax.mark(6, 2); yield;
+						for(let i = 0; i < array.elements.length-2; i++) {
+							opt.syntax.mark(7); 
 							array.elements[i].highlight('red');
 							uj_array.elements[i].highlight('red');
 							uj_array.elements[i].val = array.elements[i].val;
@@ -533,47 +567,51 @@
 	
 							array.elements[i].unhighlight();
 							uj_array.elements[i].unhighlight();
-							opt.syntax.mark(4, 3); yield;
-							opt.syntax.mark(4, 2); yield;
+							opt.syntax.mark(6, 3); yield;
+							opt.syntax.mark(6, 2); yield;
 						}
 	
-						opt.syntax.mark(8);
-						db.highlight('red');
-						db.setText(uj_array.elements.length);
+						opt.syntax.mark(10);
+						uj_array.elements[array.elements.length-2].highlight('red');
+						uj_array.elements[array.elements.length-2].setText('\\0');
 						yield;
 	
-						opt.syntax.mark(9);
-						db.unhighlight();
+						opt.syntax.mark(11);
+						uj_array.elements[array.elements.length-2].unhighlight();
 						array.hide();
 						adat.bind({to: null});
 						yield;
 	
-						opt.syntax.mark(10); 
+						opt.syntax.mark(12); 
 						adat.bind({to: uj_array.elements[0], fromp: 'r', top: 'l'});
 						adat.highlight('red');
 						yield;
 						adat.unhighlight();
 						uj_adat.hide();
 						uj_text.hide();
+						regi_adat.hide();
+						regi_text.hide();
 						opt.syntax.unmark();
 					});
 				</script>
 			</section>
 			<section>
-				<h2>Törlés tömb elejéről</h2>
+				<h2>Törlés sztring elejéről</h2>
 
-				<p>Szintén feladat lehet, hogy a tömb első elemét töröljük. A trükk itt is az, hogy az első elem, sosem lesz átmásolva az új helyre. Érdemes megfigyelni, hogy a fenti algoritmushoz képest, kizátólag annyi a különbség, hogy az 5. sorban <code>adat[i]</code> helyett <code>adat[i+1]</code> szerepel.</p>
+				<p>Ez szintén egy egyszerű feladat, hasonló az előzőhöz.</p>
 				<script type="application/text" id="src6" data-language="infoc">
-					void torol(DinTomb* t) {
-						uj_adat = (int*) malloc((t->db-1) * sizeof(int)); // új memória foglalása
+					void torol(char** s) {
+						char* regi_adat = *s;
+						int len = strlen(regi_adat);
+						char* uj_adat = (char*) malloc((len) * sizeof(char)); // új memória foglalása
 		
-						for(int i = 0; i < t->db-1; i++) { // a ciklus csak db-1-ig megy!
-							uj_adat[j] = t->adat[i+1]; // régi elemek átmásolása
+						for(int i = 1; i < len; i++) {
+							uj_adat[i-1] = regi_adat[i]; // régi elemek átmásolása
 						}
 	
-						t->db--; // új méret beállítása
-						free(t->adat); // régi memória felszabadítása
-						t->adat = uj_adat;
+						uj_adat[len-1] = '\0'; // lezáró nulla
+						free(regi_adat); // régi memória felszabadítása
+						*s = uj_adat;
 					}
 				</script>
 				<svg width="100%" id="dest6"></svg>
@@ -586,85 +624,100 @@
 						height: 200
 					}, function*(opt) {
 
-						var array = new OwlDraw.array({x:200, y: 20, width: 40, height: 40, num: 6, type: 'random'});
+						var array = new OwlDraw.array({x:200, y: 20, width: 40, height: 40, num: 6, type: 'elements'}, ['D', 'a', 'l', 'm', 'a', '\\0']);
 						var adat = new OwlDraw.pointer({x: 120, y: 20, width: 30, height: 30, to: array.elements[0], fromp: 'r', top: 'l'});
-						var db = new OwlDraw.rect({x: 120, y: 50, width: 30, height:30, txt: array.elements.length});
-						var text = new OwlDraw.text({x: 135, y: 75, txt: '*t'});
-						opt.draw.add(array); opt.draw.add(text); opt.draw.add(adat); opt.draw.add(db);
+						var text = new OwlDraw.text({x: 135, y: 50, txt: '*s'});
+						opt.draw.add(array); opt.draw.add(text); opt.draw.add(adat);
 
 						var t_pointer = new OwlDraw.pointer({x: 20, y: 20, width: 30, height: 30, to: adat, fromp: 'r', top: 'l'});
-						var text = new OwlDraw.text({x: 35, y: 55, txt: 't'});
+						var text = new OwlDraw.text({x: 35, y: 50, txt: 's'});
 						opt.draw.add(t_pointer); opt.draw.add(text);
+
+						var regi_adat = new OwlDraw.pointer({x: 120, y: 75, width: 30, height: 30, to: null}); regi_adat.hide();
+						var regi_text = new OwlDraw.text({x: 135, y: 105, txt: 'regi_adat'}); regi_text.hide();
+						opt.draw.add(regi_adat); opt.draw.add(regi_text);
 	
 						var uj_array = new OwlDraw.array({x:200, y: 100, width: 40, height: 40, num: 5, type: 'empty'}); uj_array.hide();
-						var uj_adat = new OwlDraw.pointer({x: 120, y: 100, width: 30, height: 30, to: null}); uj_adat.hide();
-						var uj_text = new OwlDraw.text({x: 135, y: 135, txt: 'uj_t'}); uj_text.hide();
+						var uj_adat = new OwlDraw.pointer({x: 120, y: 130, width: 30, height: 30, to: null}); uj_adat.hide();
+						var uj_text = new OwlDraw.text({x: 135, y: 155, txt: 'uj_adat'}); uj_text.hide();
 						opt.draw.add(uj_array); opt.draw.add(uj_text); opt.draw.add(uj_adat); 
 						yield;
 	
 						opt.syntax.mark(2);
+						regi_adat.show();
+						regi_adat.bind({to: array.elements[0], fromp: 'r', top: 'l'});
+						regi_text.show();
+						yield;
+
+						opt.syntax.mark(3); yield;
+
+						opt.syntax.mark(4);
 						uj_adat.show(); uj_array.show(); uj_text.show();
 						uj_adat.bind({to: uj_array.elements[0], fromp: 'r', top: 'l'});
 						yield;
 
-						opt.syntax.mark(4, 1); yield;
-						opt.syntax.mark(4, 2); yield;
-						for(let i = 0; i < array.elements.length-1; i++) {
+						opt.syntax.mark(6, 1); yield;
+						opt.syntax.mark(6, 2); yield;
+						for(let i = 1; i < array.elements.length-1; i++) {
 							opt.syntax.mark(5); 
-							array.elements[i+1].highlight('red');
-							uj_array.elements[i].highlight('red');
-							uj_array.elements[i].val = array.elements[i+1].val;
-							uj_array.elements[i].setText(array.elements[i+1].val);
+							array.elements[i].highlight('red');
+							uj_array.elements[i-1].highlight('red');
+							uj_array.elements[i-1].val = array.elements[i].val;
+							uj_array.elements[i-1].setText(array.elements[i].val);
 							yield;
 	
-							array.elements[i+1].unhighlight();
-							uj_array.elements[i].unhighlight();
-							opt.syntax.mark(4, 3); yield;
-							opt.syntax.mark(4, 2); yield;
+							array.elements[i].unhighlight();
+							uj_array.elements[i-1].unhighlight();
+							opt.syntax.mark(6, 3); yield;
+							opt.syntax.mark(6, 2); yield;
 						}
 	
-						opt.syntax.mark(8);
-						db.highlight('red');
-						db.setText(uj_array.elements.length);
+						opt.syntax.mark(10);
+						uj_array.elements[array.elements.length-2].highlight('red');
+						uj_array.elements[array.elements.length-2].setText('\\0');
 						yield;
 	
-						opt.syntax.mark(9);
-						db.unhighlight();
+						opt.syntax.mark(11);
+						uj_array.elements[array.elements.length-2].unhighlight();
 						array.hide();
 						adat.bind({to: null});
 						yield;
 	
-						opt.syntax.mark(10); 
+						opt.syntax.mark(12); 
 						adat.bind({to: uj_array.elements[0], fromp: 'r', top: 'l'});
 						adat.highlight('red');
 						yield;
 						adat.unhighlight();
 						uj_adat.hide();
 						uj_text.hide();
+						regi_adat.hide();
+						regi_text.hide();
 						opt.syntax.unmark();
 					});
 				</script>
 			</section>
 			<section>
-				<h2>Törlés tömb közepéről</h2>
+				<h2>Törlés sztring közepéről</h2>
 
-				<p>Természetesen a tömb tetszőleges helyéről is lehet törölni. Ezt az algoritmust érdemes összehasonlítani a közepére való beszúrással, mert kísértetiesen hasonlít. A törlést megvalósító trükk itt is az, hogy a törlendő elem nem lesz lemásova</p>
+				<p>Szintén feladat lehet, hogy egy bizonyos karakter kerüljön ki a szövegből.</p>
 				<script type="application/text" id="src7" data-language="infoc">
-					void beszur(DinTomb* t, int honnan) {
-						uj_adat = (int*) malloc((t->db-1) * sizeof(int)); // új memória foglalása
+					void torol(char** s, int honnan) {
+						char* regi_adat = *s;
+						int len = strlen(regi_adat);
+						char* uj_adat = (char*) malloc((len) * sizeof(char)); // új memória foglalása
 		
-						for(int i = 0, j = 0; i < t->db-1; i++, j++) {
+						for(int i = 0, j = 0; i < len; i++, j++) {
 							if(i == honnan) {
 								j--; // elem törlése
 							}
 							else {
-								uj_adat[j] = t->adat[i]; // régi elemek átmásolása
+								uj_adat[j] = regi_adat[i]; // régi elemek átmásolása
 							}
 						}
 	
-						t->db--; // új méret beállítása
-						free(t->adat); // régi memória felszabadítása
-						t->adat = uj_adat;
+						uj_adat[len-1] = '\0'; // lezáró nulla
+						free(regi_adat); // régi memória felszabadítása
+						*s = uj_adat;
 					}
 				</script>
 				<svg width="100%" id="dest7"></svg>
@@ -676,101 +729,123 @@
 						width: 600,
 						height: 200
 					}, function*(opt) {
-
-						var array = new OwlDraw.array({x:200, y: 20, width: 40, height: 40, num: 6, type: 'random'});
+						var array = new OwlDraw.array({x:200, y: 20, width: 40, height: 40, num: 6, type: 'elements'}, ['k', 'o', 'r', 't', 'e', '\\0']);
 						var adat = new OwlDraw.pointer({x: 120, y: 20, width: 30, height: 30, to: array.elements[0], fromp: 'r', top: 'l'});
-						var db = new OwlDraw.rect({x: 120, y: 50, width: 30, height:30, txt: array.elements.length});
-						var text = new OwlDraw.text({x: 135, y: 75, txt: '*t'});
-						opt.draw.add(array); opt.draw.add(text); opt.draw.add(adat); opt.draw.add(db);
+						var text = new OwlDraw.text({x: 135, y: 50, txt: '*s'});
+						opt.draw.add(array); opt.draw.add(text); opt.draw.add(adat);
 
 						var t_pointer = new OwlDraw.pointer({x: 20, y: 20, width: 30, height: 30, to: adat, fromp: 'r', top: 'l'});
-						var text = new OwlDraw.text({x: 35, y: 55, txt: 't'});
+						var text = new OwlDraw.text({x: 35, y: 50, txt: 's'});
 						opt.draw.add(t_pointer); opt.draw.add(text);
 
-						var hova = new OwlDraw.rect({x: 20, y: 80, width: 30, height: 30, txt: Math.floor(Math.random() * array.elements.length).toString()});
-						var hova_text = new OwlDraw.text({x: 35, y: 105, txt: 'honnan'});
-						opt.draw.add(hova); opt.draw.add(hova_text);
+						var regi_adat = new OwlDraw.pointer({x: 120, y: 75, width: 30, height: 30, to: null}); regi_adat.hide();
+						var regi_text = new OwlDraw.text({x: 135, y: 105, txt: 'regi_adat'}); regi_text.hide();
+						opt.draw.add(regi_adat); opt.draw.add(regi_text);
+
+						var honnan = new OwlDraw.rect({x: 20, y: 80, width: 30, height: 30, txt: Math.floor(Math.random() * (array.elements.length - 1)).toString()});
+						var honnan_text = new OwlDraw.text({x: 35, y: 105, txt: 'honnan'});
+						opt.draw.add(honnan); opt.draw.add(honnan_text);
 	
 						var uj_array = new OwlDraw.array({x:200, y: 100, width: 40, height: 40, num: 5, type: 'empty'}); uj_array.hide();
-						var uj_adat = new OwlDraw.pointer({x: 120, y: 100, width: 30, height: 30, to: null}); uj_adat.hide();
-						var uj_text = new OwlDraw.text({x: 135, y: 135, txt: 'uj_t'}); uj_text.hide();
+						var uj_adat = new OwlDraw.pointer({x: 120, y: 130, width: 30, height: 30, to: null}); uj_adat.hide();
+						var uj_text = new OwlDraw.text({x: 135, y: 155, txt: 'uj_adat'}); uj_text.hide();
 						opt.draw.add(uj_array); opt.draw.add(uj_text); opt.draw.add(uj_adat); 
 						yield;
-	
+
 						opt.syntax.mark(2);
+						regi_adat.show();
+						regi_adat.bind({to: array.elements[0], fromp: 'r', top: 'l'});
+						regi_text.show();
+						yield;
+
+						opt.syntax.mark(3); yield;
+	
+						opt.syntax.mark(4);
 						uj_adat.show(); uj_array.show(); uj_text.show();
 						uj_adat.bind({to: uj_array.elements[0], fromp: 'r', top: 'l'});
 						yield;
 
-						opt.syntax.mark(4, 1); yield;
-						opt.syntax.mark(4, 2); yield;
-						for(let i = 0, j = 0; i < array.elements.length; i++, j++) {
-							opt.syntax.mark(5); yield;
-							if(i == parseInt(hova.text.innerHTML)) {
-								opt.syntax.mark(6);
-								j--;
+						opt.syntax.mark(6, 1); yield;
+						opt.syntax.mark(6, 2); yield;
+						for(let i = 0, j = 0; i < array.elements.length-1; i++, j++) {
+							opt.syntax.mark(7); yield;
+							if(i == parseInt(honnan.text.innerHTML)) {
+								opt.syntax.mark(8);
 								yield;
+								j--;
 							}
 							else {
-								opt.syntax.mark(8); yield;
-								opt.syntax.mark(9); yield;
+								opt.syntax.mark(10); yield;
+								opt.syntax.mark(11);
 								array.elements[i].highlight('red');
 								uj_array.elements[j].highlight('red');
 								uj_array.elements[j].val = array.elements[i].val;
 								uj_array.elements[j].setText(array.elements[i].val);
 								yield;
+								array.elements[i].unhighlight();
+								uj_array.elements[j].unhighlight();
 							}
 	
-							array.elements[i].unhighlight('red');
-							uj_array.elements[j].unhighlight('red');
-							opt.syntax.mark(4, 3); yield;
-							opt.syntax.mark(4, 2); yield;
+							opt.syntax.mark(6, 3); yield;
+							opt.syntax.mark(6, 2); yield;
 						}
 	
-						opt.syntax.mark(13);
-						db.highlight('red');
-						db.setText(uj_array.elements.length);
+						opt.syntax.mark(15);
+						uj_array.elements[array.elements.length-2].highlight('red');
+						uj_array.elements[array.elements.length-2].val = '\\0';
+						uj_array.elements[array.elements.length-2].setText('\\0');
 						yield;
 	
-						opt.syntax.mark(14);
-						db.unhighlight();
+						opt.syntax.mark(16);
+						uj_array.elements[array.elements.length-2].unhighlight();
 						array.hide();
 						adat.bind({to: null});
 						yield;
 	
-						opt.syntax.mark(15); 
+						opt.syntax.mark(17); 
 						adat.bind({to: uj_array.elements[0], fromp: 'r', top: 'l'});
 						adat.highlight('red');
 						yield;
 						adat.unhighlight();
 						uj_adat.hide();
 						uj_text.hide();
+						regi_adat.hide();
+						regi_text.hide();
 						opt.syntax.unmark();
 					});
 				</script>
 			</section>
 			<section>
-				<h2>Dinamikus tömbök strukturáltan</h2>
+				<h2>Dinamikus sztringek strukturáltan</h2>
 
-				<p>Ha dinamikus tömbök vannak használva egy programban, akkor érdemes az egyes funkciókat külön-külön függvényekbe kiszervezni, hogy később újrafelhasználhatók legyenek (ez a strukturált programozás egyik alapelve). Az alábbiakban látható egy minta program, ami felhasználja a korábban írt függvényeket, illetve megvalósítja a még két hiányzót (üres tömb létrehozása (inicializálás), tömb felszabadítása). </p>
+				<p>Ha dinamikus sztringek vannak használva egy programban, érdemes kiszervezni az egyes funkciókat külön függvényekbe, hogy azok újrafelhaszálhatók legyenek. Ezeket is érdemes strukturáltan megközelíteni. Ennek érdekében itt is bemutatom a még hiányzó függvényeket. A lent látható kód, fájl vége jelig olvassa a standard bemenet tartalmát, majd kiírja azt. Mivel a bemenet mérete nem ismert, dinamikus memóriát kell használni.</p>
+				<p>A legnagyobb különbség a dinamikus tömbökhöz képest, hogy itt az "üres" dolgot nem egy NULL pointer jelöli, hiszen egy üres sztring egy olyan karaktertömb, amiben a lezáró nullát nem előzi meg semmilyen karakter. Ennek betartása szükséges, hogy a beépített sztringkezelő függvények működjenek rajtuk.</p>
 				<script type="application/text" id="src9" data-language="infoc">
-					void letrehoz(DinTomb* t) {
-						t->adat = NULL;
-						t->db = 0;
+					void letrehoz(char** s) {
+						*s = (char*) malloc(1 * sizeof(char));
+						(*s)[0] = '\0';
 					}
 
-					void felszabadit(DinTomb* t) {
-						free(t->adat); t->adat = NULL;
-						t->db = 0;
+					void felszabadit(char** s) {
+						free(*s);
+						*s = NULL;
 					}
 					
 					int main(void) {
-						DinTomb t;
-						letrehoz(&t);
-						beszur(&t, 3); beszur(&t, 4); beszur(&t, 5);
-						int id = keres(t, 4);
-						torol(&t, id);
-						felszabadit(&t);
+						char* s;
+						letrehoz(&s);
+
+						for(char c; EOF != scanf("%c", &c); ) {
+							beszur(&s, c);
+						}
+
+						int id = keres(s, 'm');
+						if(id != -1) {
+							torol(&s, id);
+						}
+
+						printf("%s", s);
+						felszabadit(&s);
 						return 0;
 					}
 				</script>
@@ -784,43 +859,76 @@
 						height: 200
 					}, function*(opt) {
 						var adat = new OwlDraw.pointer({x: 120, y: 20, width: 30, height: 30, to: null, fromp: 'r', top: 'l'}); adat.hide();
-						var db = new OwlDraw.rect({x: 120, y: 50, width: 30, height:30, txt: ''}); db.hide();
-						var text = new OwlDraw.text({x: 135, y: 75, txt: 't'}); text.hide();
-						opt.draw.add(text); opt.draw.add(adat); opt.draw.add(db);
+						var text = new OwlDraw.text({x: 135, y: 55, txt: 's'}); text.hide();
+						opt.draw.add(text); opt.draw.add(adat);
 
-						var array1 = new OwlDraw.array({x:200, y: 20, width: 40, height: 40, num: 3, type: 'elements'}, [3, 4, 5]); array1.hide();
-						var array2 = new OwlDraw.array({x:200, y: 80, width: 40, height: 40, num: 2, type: 'elements'}, [3, 5]); array2.hide();
-						opt.draw.add(array1); opt.draw.add(array2);
+						var array1 = new OwlDraw.array({x:200, y: 20, width: 40, height: 40, num: 1, type: 'elements'}, ['\\0']); array1.hide();
+						var array2 = new OwlDraw.array({x:200, y: 20, width: 40, height: 40, num: 2, type: 'elements'}, ['a', '\\0']); array2.hide();
+						var array3 = new OwlDraw.array({x:200, y: 20, width: 40, height: 40, num: 3, type: 'elements'}, ['a', 'l', '\\0']); array3.hide();
+						var array4 = new OwlDraw.array({x:200, y: 20, width: 40, height: 40, num: 4, type: 'elements'}, ['a', 'l', 'm', '\\0']); array4.hide();
+						var array5 = new OwlDraw.array({x:200, y: 20, width: 40, height: 40, num: 5, type: 'elements'}, ['a', 'l', 'm', 'a', '\\0']); array5.hide();
+						var array6 = new OwlDraw.array({x:200, y: 20, width: 40, height: 40, num: 5, type: 'elements'}, ['a', 'l', 'a', '\\0']); array6.hide();
+						opt.draw.add(array1); opt.draw.add(array2); opt.draw.add(array3); opt.draw.add(array4); opt.draw.add(array5); opt.draw.add(array6);
 						yield;
 	
 						opt.syntax.mark(12);
-						adat.show(); db.show(); text.show(); yield;
+						adat.show(); text.show(); yield;
 
 						opt.syntax.mark(13);
-						db.setText(0); yield;
-
-						opt.syntax.mark(14);
 						array1.show();
 						adat.bind({to: array1.elements[0], fromp: 'r', top: 'l'});
 						yield;
 
-						opt.syntax.mark(15); yield;
+						opt.syntax.mark(15, 1); yield;
+						opt.syntax.mark(15, 2); yield;
 
 						opt.syntax.mark(16);
-						array2.show();
 						array1.hide();
+						array2.show();
 						adat.bind({to: array2.elements[0], fromp: 'r', top: 'l'});
 						yield;
+						opt.syntax.mark(15, 2); yield;
 
-						opt.syntax.mark(17);
-						db.setText(0);
-						adat.bind({to: null});
+						opt.syntax.mark(16);
 						array2.hide();
+						array3.show();
+						adat.bind({to: array3.elements[0], fromp: 'r', top: 'l'});
+						yield;
+						opt.syntax.mark(15, 2); yield;
+
+						opt.syntax.mark(16);
+						array3.hide();
+						array4.show();
+						adat.bind({to: array4.elements[0], fromp: 'r', top: 'l'});
+						yield;
+						opt.syntax.mark(15, 2); yield;
+
+						opt.syntax.mark(16);
+						array4.hide();
+						array5.show();
+						adat.bind({to: array5.elements[0], fromp: 'r', top: 'l'});
+						yield;
+						opt.syntax.mark(15, 2); yield;
+
+						opt.syntax.mark(19); yield;
+						opt.syntax.mark(20); yield;
+
+						opt.syntax.mark(21);
+						array5.hide();
+						array6.show();
+						adat.bind({to: array6.elements[0], fromp: 'r', top: 'l'});
+						yield;
+						
+						opt.syntax.mark(24); yield;
+
+						opt.syntax.mark(25);
+						adat.bind({to: null});
+						array6.hide();
 						yield;
 
-						opt.syntax.mark(18); yield;
+						opt.syntax.mark(26); yield;
 
-						adat.hide(); db.hide(); text.hide();
+						adat.hide(); text.hide();
 						opt.syntax.unmark();
 					});
 				</script>

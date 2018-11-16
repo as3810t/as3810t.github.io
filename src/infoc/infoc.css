@@ -77,12 +77,12 @@
 	display: block;
 	box-shadow: none;
 	position: absolute;
-	top: 0.45em;
+	top: 0.15em;
 	left: -0.65em;
 	width: 0;
 	height: 0;
-	border-top: .35em solid rgba(238,85,51,0);
-	border-bottom: .35em solid rgba(238,85,51,0);
+	border-top: .30em solid rgba(238,85,51,0);
+	border-bottom: .30em solid rgba(238,85,51,0);
 	border-right: .7em solid #e53;
 }
 
