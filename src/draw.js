@@ -1409,6 +1409,14 @@ var OwlDraw = (function() {
 			this.add(this.data);
 			this.add(this.pointer);
 		}
+
+		/**
+		 * Sets the text in the circle
+		 * @param {string} txt - The text to set
+		 */
+		setText(txt) {
+			this.data.text.innerHTML = txt;
+		}
 	}
 
 	/**

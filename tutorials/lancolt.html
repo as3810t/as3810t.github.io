@@ -1,0 +1,553 @@
+<html>
+	<head>
+		<title>Láncolt listák</title>
+		<meta charset="utf-8">
+		<script language="JavaScript" src="../src/syntax.js"></script>
+		<script language="JavaScript" src="../src/infoc/infoc.js"></script>
+		<script language="JavaScript" src="../src/draw.js"></script>
+		<script language="JavaScript" src="../src/anim.js"></script>
+		<link rel="stylesheet" href="../src/syntax.css">
+		<link rel="stylesheet" href="../src/infoc/infoc.css">
+		<link rel="stylesheet" href="../src/draw.css">
+		<link rel="stylesheet" href="../src/anim.css">
+		<style>
+			.highlight-red circle, .highlight-red rect {
+				fill: red !important;
+			}
+			.highlight-blue circle, .highlight-blue rect  {
+				fill: blue !important;
+			}
+			.highlight-green circle, .highlight-green rect  {
+				fill: green !important;
+			}
+			.highlighter {
+				width: 100%;
+				max-width: 700px;
+			}
+			svg {
+				width: 100%;
+				max-width: 700px;
+			}
+			p {
+				text-align: justify;
+				width: 100%;
+				max-width: 700px;
+			}
+			.animate {
+				width: 100%;
+				max-width: 700px;
+				text-align: center;
+			}
+			article {
+				width: 100%;
+				max-width: 700px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+		</style>
+	</head>
+	<body>
+		<article>
+			<h1>Láncolt listák</h1>
+			<section>
+				<p>A második nagyobb dinamikus adatszerkezet, amit érdemes tudni, a láncolt lista. A tömböknél nagy probléma volt, hogy egy-egy módosítás mindig új memória foglalásával jár, valamint az addigi adatok másolásával. A láncolt listák esetén új memóriát még mindig kell foglalni, viszont nem akkorát, ami az összes adat foglalásához kell, csak akkorát, ami egy elem tárolásához kell. Továbbá megússzuk a másolgatást, cserébe viszont pointerekkel kell tudni dolgozni.</p>
+			</section>
+			<section>
+				<h2>Adatszerkezet</h2>
+				<p>A továbbiakban egy számokat tároló listán mutatnám be a tudnivalókat. Alább látható az ehhez létrehozott struktúra. Amit érdemes megfigyelni, hogy a tárolt adat mellett van egy pointer is. Az adatot szokták payload-nak nevezni, míg a pointer az adatszerkezet struktúráját adja (mindig a következő listaelemre mutat, NULL, ha nincs következő). Illetve még megfigyelendő, hogy a struktúrán belül a következő pointer definíciójánál ki kell írni a struct-ot a typedef ellenére. Erre azért van szükség, mert a typedef csak a strukktúra megadása után "jön létre", azon belül még nem használható.</p>
+				<script type="application/text" id="adattipus" data-language="infoc">
+					typedef struct Szam {
+						int n;
+						struct Szam *kov;
+					} Szam;
+				</script>
+				<script language="JavaScript">
+					new OwlSyntax('adattipus');
+				</script>
+			</section>
+			<section>
+				<h2>Keresés</h2>
+
+				<p>Egy láncolt listában szinte ugyanúgy kell keresni, mint tömbökben, a fő különbség ott van, hogy itt nem lehet indexelni, azt pointer műveletekkel kell helyettesíteni. Ezt úgy szokás megcsinálni, hogy adunk egy pointert, ami végigmegy (végigiterál) az egész listán. Ezt a pointert szoktuk mozgó pointernek nevezni. Az iterálás akkor állhat le, ha a mozgo pointer értéke NULL lett, azaz nincs következő elem.</p>
+				<script type="application/text" id="src8" data-language="infoc">
+					Szam* keres(Szam* lista, int mit) {
+						for(Szam* mozgo = lista; mozgo != NULL; mozgo = mozgo->kov) {
+							if(mozgo->n == mit) {
+								return mozgo; // találat
+							}
+						}
+	
+						return NULL; // nincs találat
+					}
+				</script>
+				<svg width="100%" id="dest8"></svg>				
+
+				<script language="JavaScript">
+	
+					new OwlAnim({
+						type: 'afterDraw',
+						draw: 'dest8',
+						syntax: 'src8',
+						width: 600,
+						height: 200
+					}, function*(opt) {
+						var list = new OwlDraw.list({x: 100, y: 80, size: 40, num: 6, type: 'random'});
+						var first = new OwlDraw.group([
+							new OwlDraw.pointer({x: 20, y: 80, width: 30, height: 30, to: list.elements[0].data, fromp: 'r', top: 'l'}),
+							new OwlDraw.text({x: 35, y: 105, txt: 'lista'})
+						]);
+						opt.draw.add(list); opt.draw.add(first);
+
+						var mit_val = Math.floor(Math.random() * 6);
+						var mit = new OwlDraw.rect({x: 20, y: 140, width: 30, height:30, txt: mit_val.toString()});
+						var mit_text = new OwlDraw.text({x: 35, y: 165, txt: 'mit'});
+						opt.draw.add(mit); opt.draw.add(mit_text);
+
+						var worm = new OwlDraw.group([
+							new OwlDraw.pointer({x: 105, y: 20, width: 30, height: 30, to: null, top: 'u', fromp: 'd'}),
+							new OwlDraw.text({x: 120, y: 0, txt: 'mozgo', class: 'code'})
+						]);
+						opt.draw.add(worm); worm.hide();
+						yield;
+	
+						opt.syntax.mark(2, 1);
+						worm.show();
+						worm.highlight('red');
+						first.highlight('red');
+						yield;
+						worm.elems[0].bind({to: list.elements[0].data, top: 'u', fromp: 'd'});
+						yield;
+						worm.unhighlight();
+						first.unhighlight();
+						yield;
+
+						opt.syntax.mark(2, 2); yield;
+						for(var element = list.elements[0]; element != null; ) {
+							opt.syntax.mark(3);
+							element.data.highlight('red'); yield;
+
+							element.data.unhighlight();
+							if(element.val == mit_val) {
+								opt.syntax.mark(4); yield;
+								worm.hide();
+								opt.syntax.unmark();
+								return;
+							}
+							
+							opt.syntax.mark(2, 3);
+							worm.highlight('red');
+							element.pointer.highlight('red');
+							yield;
+							worm.elems[0].bind({to: element.next != null ? element.next.data : null, top: 'u', fromp: 'd'}); yield;
+							worm.move({dx: element.next != null ? 80 : 0, dy: 0});
+							worm.unhighlight();
+							element.pointer.unhighlight();
+							opt.syntax.mark(2, 2);
+							yield;
+
+							element = element.next;
+						}
+						
+						opt.syntax.mark(8); yield;
+						worm.hide();
+						opt.syntax.unmark();
+						
+					});
+				</script>
+			</section>
+			<section>
+				<h2>Beszúrás láncolt lista elejére</h2>
+
+				<p>Egy láncolt listát is tudni kell szerkeszteni. Kezdetnek alább látható a lista elejére való beszúrás algoritmusa. Mint látható ez egy egyszerű feladat. Az egyetlen, amire figyelni kell, hogy itt megváltozhat a lista eleje, ezért két csillaggal kell átvenni.</p>
+				<script type="application/text" id="src2" data-language="infoc">
+					void keres(Szam** lista, int mit) {
+						Szam* uj = (Szam*) malloc(sizeof(Szam)); // új elem foglalása
+						uj->n = mit;
+						uj->kov = *lista; // az eddigi lista
+						*lista = uj; // új első elem
+					}
+				</script>
+				<svg width="100%" id="dest2"></svg>				
+
+				<script language="JavaScript">
+	
+					new OwlAnim({
+						type: 'afterDraw',
+						draw: 'dest2',
+						syntax: 'src2',
+						width: 600,
+						height: 250
+					}, function*(opt) {
+						var list = new OwlDraw.list({x: 100, y: 80, size: 40, num: 4, type: 'random'});
+						var first = new OwlDraw.group([
+							new OwlDraw.pointer({x: 20, y: 80, width: 30, height: 30, to: list.elements[0].data, fromp: 'r', top: 'l'}),
+							new OwlDraw.text({x: 35, y: 105, txt: '*lista'})
+						]);
+						var first_ind = new OwlDraw.group([
+							new OwlDraw.pointer({x: 20, y: 20, width: 30, height: 30, to: first.elems[0], fromp: 'd', top: 'u'}),
+							new OwlDraw.text({x: 35, y: 0, txt: 'lista'})
+						]);
+						opt.draw.add(list); opt.draw.add(first); opt.draw.add(first_ind);
+
+						var uj = new OwlDraw.group([
+							new OwlDraw.pointer({x: 20, y: 150, width: 30, height: 30, to: null, top: 'u', fromp: 'd', arrow: 'nice'}),
+							new OwlDraw.text({x: 35, y: 175, txt: 'uj'})
+						]);
+						opt.draw.add(uj); uj.hide();
+
+						var uj_elem = new OwlDraw.listElem({x: 100, y: 150, size: 40, next: null});
+						opt.draw.add(uj_elem); uj_elem.hide();
+
+						yield;
+	
+						opt.syntax.mark(2);
+						uj.show();
+						uj_elem.show();
+						uj.elems[0].bind({to: uj_elem.data, fromp: 'r', top: 'l'});
+						yield;
+
+						opt.syntax.mark(3);
+						uj_elem.data.highlight('red');
+						uj_elem.val = 5;
+						uj_elem.setText(5);
+						yield;
+
+						uj_elem.data.unhighlight();
+						opt.syntax.mark(4);
+						uj_elem.pointer.highlight('red');
+						first.highlight('red');
+						yield;
+
+						uj_elem.pointer.bind({to: list.elements[0].data, fromp: 'r', top: 'l'});
+						uj_elem.pointer.unhighlight();
+						first.unhighlight();
+						yield;
+
+						opt.syntax.mark(5);
+						first.highlight('red');
+						uj.highlight('red');
+						yield;
+
+						first.elems[0].bind({to: uj_elem.data, fromp: 'r', top: 'l'});
+						first.unhighlight();
+						uj.unhighlight();
+						yield;
+
+						uj_elem.move({dx: 0, dy: -70});
+						list.move({dx: 80, dy: 0});
+						opt.syntax.unmark();
+						uj.hide();
+						
+					});
+				</script>
+			</section>
+			<section>
+				<h2>Beszúrás láncolt lista végére</h2>
+
+				<p>Láncolt listáknál általában igaz, hogy egy egyszerű feladathoz is két külön problémát kell megoldani. A kérdés, hogy most módosulhat-e a lista eleje. Míg első gondolat az, hogy nem, sajnos módosulhat, amennyiben a lista, amibe beszúrunk üres volt. Így a beszúrásnál két különböző feladat megoldása szükséges, továbbá két csillaggal kell átvenni a listát.</p>
+				<script type="application/text" id="src3" data-language="infoc">
+					void beszur(Szam** lista, int mit) {
+						Szan* uj = (Szam*) malloc(sizeof(Szam)); // új lista elem
+						uj->n = mit;
+						uj->kov = NULL; // nincs következő elem
+
+						if(*lista == NULL) { // ha üres volt a lista
+							*lista = uj; // új első elem
+						}
+						else {
+							Szam* mozgo = *lista;
+							while(mozgo->kov != NULL) { // utolsó elem megkeresése
+								mozgo = mozgo->kov;
+							}
+							mozgo->kov = uj; //új utolsó elem (NULL helyett vmi)
+						}
+					}
+				</script>
+				<svg width="100%" id="dest3"></svg>				
+
+				<script language="JavaScript">
+	
+					new OwlAnim({
+						type: 'afterDraw',
+						draw: 'dest3',
+						syntax: 'src3',
+						width: 600,
+						height: 250
+					}, function*(opt) {
+						var num = Math.floor(Math.random()*4);
+						var list = new OwlDraw.list({x: 100, y: 80, size: 40, num: num, type: 'random'}); if(num == 0) list.hide();
+						var first = new OwlDraw.group([
+							new OwlDraw.pointer({x: 20, y: 80, width: 30, height: 30, to: num == 0 ? null : list.elements[0].data, fromp: 'r', top: 'l'}),
+							new OwlDraw.text({x: 35, y: 105, txt: '*lista'})
+						]);
+						var first_ind = new OwlDraw.group([
+							new OwlDraw.pointer({x: 20, y: 20, width: 30, height: 30, to: first.elems[0], fromp: 'd', top: 'u'}),
+							new OwlDraw.text({x: 35, y: 0, txt: 'lista'})
+						]);
+						opt.draw.add(list); opt.draw.add(first); opt.draw.add(first_ind);
+
+						var uj = new OwlDraw.group([
+							new OwlDraw.pointer({x: 20 + num*80, y: 150, width: 30, height: 30, to: null, top: 'u', fromp: 'd', arrow: 'nice'}),
+							new OwlDraw.text({x: 35 + num*80, y: 175, txt: 'uj'})
+						]);
+						opt.draw.add(uj); uj.hide();
+
+						var uj_elem = new OwlDraw.listElem({x: 100 + num*80, y: 150, size: 40, next: null}); uj_elem.data.setText(5);
+						opt.draw.add(uj_elem); uj_elem.hide();
+
+						var worm = new OwlDraw.group([
+							new OwlDraw.pointer({x: 105, y: 20, width: 30, height: 30, to: null, top: 'u', fromp: 'd'}),
+							new OwlDraw.text({x: 120, y: 0, txt: 'mozgo', class: 'code'})
+						]);
+						opt.draw.add(worm); worm.hide();
+
+						yield;
+	
+						opt.syntax.mark([2, 3, 4]);
+						uj.show();
+						uj_elem.show();
+						uj.elems[0].bind({to: uj_elem.data, fromp: 'r', top: 'l'});
+						yield;
+
+						opt.syntax.mark(6); yield;
+						if(num == 0) {
+							opt.syntax.mark(7);
+							first.highlight('red');
+							uj.highlight('red');
+							yield;
+
+							first.elems[0].bind({to: uj_elem.data, fromp: 'r', top: 'l'});
+							first.unhighlight();
+							uj.unhighlight();
+							yield;
+
+							uj_elem.move({dx: 0, dy: -70});
+							uj.hide();
+							opt.syntax.unmark();
+							return;
+						}
+						else {
+							opt.syntax.mark(9); yield;
+
+							opt.syntax.mark(10);
+							worm.show();
+							worm.highlight('red');
+							first.highlight('red');
+							yield;
+
+							worm.elems[0].bind({to: list.elements[0].data, fromp: 'd', top: 'u'});
+							worm.unhighlight();
+							first.unhighlight();
+							yield;
+
+							opt.syntax.mark(11); yield;
+							for(var element = list.elements[0]; element.next != null; element = element.next) {
+								opt.syntax.mark(12); 
+								element.pointer.highlight('red');
+								worm.highlight('red');
+								yield;
+
+								worm.elems[0].bind({to: element.next.data, fromp: 'd', top: 'u'});
+								element.pointer.unhighlight();
+								worm.unhighlight();
+								yield;
+								worm.move({dx: 80, dy: 0});
+
+								opt.syntax.mark(11); yield;
+							}
+
+							opt.syntax.mark(14);
+							element.pointer.highlight('red');
+							uj.highlight('red');
+							yield;
+
+							element.pointer.bind({to: uj_elem.data, fromp: 'r', top: 'l'});
+							element.pointer.unhighlight();
+							uj.unhighlight();
+							yield;
+
+							uj_elem.move({dx: 0, dy: -70});
+							uj.hide();
+							worm.hide();
+							opt.syntax.unmark();
+						}
+						
+					});
+				</script>
+			</section>
+			<section>
+				<h2>Beszúrás láncolt lista közepére</h2>
+
+				<p>Ez a probléma egy picit további általánosítása az előzőnek. A függvény a hova paraméterével jelzi, hogy hova szúrja be az elemet. Az elemet mindig a pointer által jelölt elem elé szúrja be (ha NULL, akkor a legvégére).</p>
+				<script type="application/text" id="src4" data-language="infoc">
+					void beszur(Szam** lista, int mit Szam* hova) {
+						Szan* uj = (Szam*) malloc(sizeof(Szam)); // új lista elem
+						uj->n = mit;
+						uj->kov = NULL;
+
+						Szam *mozgo = *lista, *lemarado = NULL;
+						while(mozgo != hova && mozgo != NULL) { // hely megkeresése
+							lemarado = mozgo;
+							mozgo = mozgo->kov;
+						}
+
+						uj->kov = mozgo; // következő elem beállítása
+						if(lemarado == NULL) { // ha első helyre beszúrás
+							*lista = uj; // új első elem
+						}
+						else {
+							lemarado->kov = uj; // elem beszúrása
+						}
+					}
+				</script>
+				<svg width="100%" id="dest4"></svg>				
+
+				<script language="JavaScript">
+	
+					new OwlAnim({
+						type: 'afterDraw',
+						draw: 'dest4',
+						syntax: 'src4',
+						width: 600,
+						height: 250
+					}, function*(opt) {
+						var num = Math.floor(Math.random()*4);
+						var where = Math.round(Math.random() * num);
+
+						var list = new OwlDraw.list({x: 100, y: 100, size: 40, num: num, type: 'random'}); if(num == 0) list.hide();
+						var first = new OwlDraw.group([
+							new OwlDraw.pointer({x: 20, y: 100, width: 30, height: 30, to: num == 0 ? null : list.elements[0].data, fromp: 'r', top: 'l'}),
+							new OwlDraw.text({x: 35, y: 125, txt: '*lista'})
+						]);
+						var first_ind = new OwlDraw.group([
+							new OwlDraw.pointer({x: 20, y: 20, width: 30, height: 30, to: first.elems[0], fromp: 'd', top: 'u'}),
+							new OwlDraw.text({x: 35, y: 0, txt: 'lista'})
+						]);
+						opt.draw.add(list); opt.draw.add(first); opt.draw.add(first_ind);
+
+						var hova = new OwlDraw.group([
+							new OwlDraw.pointer({x: 105 + where*80, y: 20, width: 30, height: 30, to: where == num ? null : list.elements[where].data, fromp: 'd', top: 'u'}),
+							new OwlDraw.text({x: 120 + where*80, y: 0, txt: 'hova'})
+						]);
+						opt.draw.add(hova);
+
+						var uj = new OwlDraw.group([
+							new OwlDraw.pointer({x: 20 + where*80, y: 170, width: 30, height: 30, to: null, top: 'u', fromp: 'd', arrow: 'nice'}),
+							new OwlDraw.text({x: 35 + where*80, y: 195, txt: 'uj'})
+						]);
+						opt.draw.add(uj); uj.hide();
+
+						var uj_elem = new OwlDraw.listElem({x: 100 + where*80, y: 170, size: 40, next: null}); uj_elem.data.setText(5);
+						opt.draw.add(uj_elem); uj_elem.hide();
+
+						var worm = new OwlDraw.group([
+							new OwlDraw.pointer({x: 105, y: 50, width: 30, height: 30, to: null, top: 'u', fromp: 'd'}),
+							new OwlDraw.text({x: 120, y: 30, txt: 'mozgo'})
+						]);
+						var last = new OwlDraw.group([
+							new OwlDraw.pointer({x: 25, y: 50, width: 30, height: 30, to: null, top: 'u', fromp: 'd'}),
+							new OwlDraw.text({x: 40, y: 30, txt: 'lemarado'})
+						]);
+						opt.draw.add(worm); worm.hide(); opt.draw.add(last); last.hide();
+
+						yield;
+	
+						opt.syntax.mark([2, 3, 4]);
+						uj.show();
+						uj_elem.show();
+						uj.elems[0].bind({to: uj_elem.data, fromp: 'r', top: 'l'});
+						yield;
+
+						opt.syntax.mark(6);
+						worm.show();
+						last.show();
+						worm.elems[0].bind({to: num == 0 ? null : list.elements[0].data, fromp: 'd', top: 'u'});
+						yield;
+
+						opt.syntax.mark(7); yield;
+						for(var i = 0; i < where && i < num; i++) {
+							opt.syntax.mark(8);
+							last.highlight('red');
+							worm.highlight('red');
+							yield;
+
+							last.unhighlight();
+							worm.unhighlight();
+							last.elems[0].bind({to: list.elements[i].data, fromp: 'd', top: 'u'});
+							yield;
+
+							opt.syntax.mark(9);
+							worm.highlight('red');
+							list.elements[i].pointer.highlight('red');
+							yield;
+
+							worm.unhighlight();
+							list.elements[i].pointer.unhighlight();
+							worm.elems[0].bind({to: i == num-1 ? null : list.elements[i+1].data, fromp: 'd', top: 'u'});
+							yield;
+
+							last.move({dx: 80, dy: 0});
+							worm.move({dx: 80, dy: 0});
+							yield;
+
+							opt.syntax.mark(7); yield;
+						}
+
+						opt.syntax.mark(12);
+						worm.highlight('red');
+						uj_elem.pointer.highlight('red');
+						yield;
+
+						if(where != num) {
+							uj_elem.pointer.bind({to: list.elements[where].data, fromp: 'r', top: 'l'});
+						}
+						worm.unhighlight();
+						uj_elem.pointer.unhighlight();
+						yield;
+
+						opt.syntax.mark(13); yield;
+						if(where == 0) {
+							opt.syntax.mark(14);
+							first.highlight('red');
+							uj.highlight('red');
+							yield;
+
+							first.elems[0].bind({to: uj_elem.data, fromp: 'r', top: 'l'});
+							first.unhighlight();
+							uj.unhighlight();
+							yield;
+
+							list.move({dx: 80, dy: 0});
+						}
+						else {
+							opt.syntax.mark(16); yield;
+							opt.syntax.mark(17);
+							list.elements[where-1].pointer.highlight('red');
+							uj.highlight('red');
+							yield;
+
+							list.elements[where-1].pointer.bind({to: uj_elem.data, fromp: 'r', top: 'l'});
+							list.elements[where-1].pointer.unhighlight();
+							uj.unhighlight();
+							yield;
+
+							for(var i = where; i < list.elements.length; i++) {
+								list.elements[i].move({dx: 80, dy: 0});
+							}
+						}
+
+						hova.move({dx: 80, dy: 0});
+						uj_elem.move({dx: 0, dy: -70});
+						yield;
+
+						opt.syntax.unmark();
+						worm.hide();
+						last.hide();
+						uj.hide();
+						
+					});
+				</script>
+			</section>
+		</article>
+	</body>
+</html>
